@@ -21,15 +21,14 @@ import android.widget.TextView;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
+import com.smartdesk.databinding.ScreenSplashBinding;
 import com.smartdesk.screens.admin._home.ScreenAdminHome;
-import com.smartdesk.screens.consumer._home.ScreenConsumerHome;
-import com.smartdesk.screens.worker._home.ScreenWorkerHome;
-import com.smartdesk.screens.worker.track_consumer.ScreenTrackConsumerHired;
+import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
+import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.encryption.EncryptPassword;
-import com.smartdesk.model.signup.SignupMechanicDTO;
-import com.smartdesk.screens.consumer.track_mechanic.ScreenTrackMechanic;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -41,24 +40,25 @@ import static com.smartdesk.constants.FirebaseConstants.firebaseFirestore;
 
 public class ScreenSplash extends AppCompatActivity {
 
+    ScreenSplashBinding binding;
     private Activity context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_splash);
+        binding = ScreenSplashBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        context = this;
 
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
                 .build();
         firebaseFirestore.setFirestoreSettings(settings);
 
-        context = this;
         UtilityFunctions.subscribeFCMTopic(FirebaseConstants.fcmTopic);
         initLoadingBarItems();
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
-        TextView welcome = findViewById(R.id.welcometxt);
-        welcome.startAnimation(animation);
+        binding.welcometxt.startAnimation(animation);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
@@ -77,51 +77,44 @@ public class ScreenSplash extends AppCompatActivity {
         final Boolean isLogin = prefs.getBoolean(Constants.SP_ISLOGIN, false);
         Constants.USER_DOCUMENT_ID = documentId;
         if (documentId != null && isLogin) {
-            new Handler().postDelayed(() -> {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 startAnim();
                 firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", mobile).get()
                         .addOnSuccessListener(task -> {
                     if (!task.isEmpty()) {
-                        SignupMechanicDTO signupMechanicDTO = task.toObjects(SignupMechanicDTO.class).get(0);
+                        SignupUserDTO signupUserDTO = task.toObjects(SignupUserDTO.class).get(0);
                         new Thread(() -> {
                             String decryptPassword = "";
                             try {
-                                decryptPassword = EncryptPassword.passwordDecryption(signupMechanicDTO.getWorkerPassword());
+                                decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.getWorkerPassword());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             stopAnimOnUIThread();
                             if (decryptPassword.equals(pass)) {
-                                Constants.USER_NAME = signupMechanicDTO.getWorkerName();
-                                Constants.USER_PROFILE = signupMechanicDTO.getProfilePicture();
-                                Constants.USER_MOBILE = signupMechanicDTO.getWorkerPhone();
+                                Constants.USER_NAME = signupUserDTO.getWorkerName();
+                                Constants.USER_PROFILE = signupUserDTO.getProfilePicture();
+                                Constants.USER_MOBILE = signupUserDTO.getWorkerPhone();
                                 UtilityFunctions.scheduleJob(this, true);
 
-                                if (signupMechanicDTO.getUserStatus().equals(Constants.activeStatus)) {
+                                if (signupUserDTO.getUserStatus().equals(Constants.activeStatus)) {
                                     UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
-                                    if (signupMechanicDTO.getRole().equals(Constants.adminRole)) {
+                                    if (signupUserDTO.getRole().equals(Constants.adminRole)) {
                                         System.out.println("admin");
                                         Constants.USER_ROLE = Constants.adminRole;
                                         UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
-                                    } else if (signupMechanicDTO.getRole().equals(Constants.workerRole)) {
+                                    } else if (signupUserDTO.getRole().equals(Constants.deskUserRole)) {
                                         System.out.println("Mechanic");
-                                        Constants.USER_ROLE = Constants.workerRole;
-                                        Constants.USER_MECHANIC_ONLINE= signupMechanicDTO.getOnline();
-                                        if (!signupMechanicDTO.getHired())
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenWorkerHome.class), true, Constants.changeIntentDelay);
-                                        else
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenTrackConsumerHired.class), true, Constants.changeIntentDelay);
-                                    } else if (signupMechanicDTO.getRole().equals(Constants.consumerRole)) {
+                                        Constants.USER_ROLE = Constants.deskUserRole;
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserHome.class), true, Constants.changeIntentDelay);
+                                    } else if (signupUserDTO.getRole().equals(Constants.managerRole)) {
                                         System.out.println("Consumer");
-                                        Constants.USER_ROLE = Constants.consumerRole;
-                                        if (!signupMechanicDTO.getHired())
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenConsumerHome.class), true, Constants.changeIntentDelay);
-                                        else
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenTrackMechanic.class), true, Constants.changeIntentDelay);
+                                        Constants.USER_ROLE = Constants.managerRole;
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManagerHome.class), true, Constants.changeIntentDelay);
                                     }
                                 } else {
                                     UtilityFunctions.setIsLoignSharedPreference(context, false);
-                                    alertToMoveToLogin("Account Status", signupMechanicDTO.getUserStatus(), Gravity.CENTER);
+                                    alertToMoveToLogin("Account Status", signupUserDTO.getUserStatus(), Gravity.CENTER);
                                 }
                             } else {
                                 UtilityFunctions.setIsLoignSharedPreference(context, false);

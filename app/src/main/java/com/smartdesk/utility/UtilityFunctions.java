@@ -772,9 +772,9 @@ public class UtilityFunctions {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     progressDialog.dismiss();
-                    if (Constants.const_MechanicSignupDTO != null) {
+                    if (Constants.const_usersSignupDTO != null) {
                        if (postion == 2)
-                           Constants.const_MechanicSignupDTO.setProfilePicture(downloadUri.toString());
+                           Constants.const_usersSignupDTO.setProfilePicture(downloadUri.toString());
                     } else if (Constants.const_ConsumerSignupDTO != null) {
                         Constants.const_ConsumerSignupDTO.setProfilePicture(downloadUri.toString());
                     } else {
@@ -990,7 +990,7 @@ public class UtilityFunctions {
     }
 
     public static String getPhoneNumberInFormat(String number) {
-        return number.substring(0, 4) + "-" + number.substring(4);
+        return number.substring(0, 2) + "-" + number.substring(2);
     }
 
     public static String getCnicInFormat(String number) {

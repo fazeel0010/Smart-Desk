@@ -181,11 +181,11 @@
                     android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_city"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
             </LinearLayout>
 
             <Spinner
-                android:id="@+id/city"
+                android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_top_bottom_right_radius_spinner"
@@ -226,7 +226,7 @@
                     android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_password"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
             </LinearLayout>
 
             <com.smartdesk.utility.library.CustomEditext
@@ -270,7 +270,7 @@
                     android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_password"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
             </LinearLayout>
 
             <com.smartdesk.utility.library.CustomEditext

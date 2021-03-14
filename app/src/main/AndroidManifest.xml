@@ -41,15 +41,28 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- ============================= Mechanic Signup Screens ==================================== -->
+        </activity> <!-- ============================= Desk User Signup Screens ==================================== -->
         <activity
-            android:name="com.smartdesk.screens.worker.sign_up.ScreenWorkerSignup"
+            android:name="com.smartdesk.screens.desk_users_screens.sign_up.ScreenDeskUserSignup"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" /> <!-- ============================= Consumer Signup Screens ==================================== -->
         <activity
-            android:name="com.smartdesk.screens.consumer.sign_up.ScreenConsumerSignup"
+            android:name="com.smartdesk.screens.desk_users_screens.charging.ScreenWirelessCharging"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" /> <!-- ============================= Signup Otop Screen Screens ==================================== -->
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <activity
+            android:name="com.smartdesk.screens.manager_screens.sign_up.ScreenMangerSignup"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <activity
+            android:name="com.smartdesk.screens.manager_screens._home.ScreenManagerHome"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+
+        <!-- ============================= Signup Otop Screen Screens ==================================== -->
         <activity
             android:name="com.smartdesk.screens.user_management.signup_otp.ScreenSignUpOTP"
             android:screenOrientation="portrait"
@@ -78,34 +91,36 @@
             android:name="com.smartdesk.screens.admin._home.ScreenAdminHome"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+
         <activity
-            android:name="com.smartdesk.screens.admin.ScreenBlockedMechanics"
+            android:name="com.smartdesk.screens.admin.manager_status.ScreenManager"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.smartdesk.screens.admin.desk_user_status.ScreenBlockedDeskUser"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name="com.smartdesk.screens.admin.manager_status.ScreenBlockedManager"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.smartdesk.screens.admin.mechanics_status.ScreenMechanicDetail"
+            android:name="com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" /> <!-- ============================= Consumer Screens ==================================== -->
+
+
         <activity
-            android:name="com.smartdesk.screens.consumer._home.ScreenConsumerHome"
+            android:name="com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.smartdesk.screens.consumer.track_mechanic.ScreenTrackMechanic"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" /> <!-- ============================= Mechanic Screens ==================================== -->
-        <activity
-            android:name="com.smartdesk.screens.worker._home.ScreenWorkerHome"
+            android:name="com.smartdesk.screens.desk_users_screens.user_requests.ScreenDeskUserRequest"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name="com.smartdesk.screens.worker.user_requests.ScreenUserRequest"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name="com.smartdesk.screens.worker.payment_history.ScreenPaymentHistory"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" /> <!-- ============================= Setting Screens ============================================ -->
+
         <activity
             android:name="com.smartdesk.screens.user_management.setting.ScreenMechanicSetting"
             android:screenOrientation="portrait"
@@ -146,29 +161,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <activity
-            android:name="com.smartdesk.screens.consumer.workers_in_map.shopInfo.ScreenShopInfo"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <activity
-            android:name="com.smartdesk.screens.worker.track_consumer.ScreenTrackConsumerHired"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <!-- ============================= Chat Screen ============================================ -->
-        <activity
-            android:name="com.smartdesk.screens.consumer.chat.ScreenChatList"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name="com.smartdesk.screens.consumer.chat.ScreenChat"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name="com.smartdesk.screens.consumer.chat.ScreenChatDetail"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
 
         <!-- xxxxxxxxxxxxxxxxxxxxxxxACTIVITY ENDxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
 

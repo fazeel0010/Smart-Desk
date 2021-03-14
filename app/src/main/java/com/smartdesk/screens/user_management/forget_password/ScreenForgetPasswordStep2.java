@@ -206,7 +206,7 @@ public class ScreenForgetPasswordStep2 extends AppCompatActivity {
         isOkay = true;
         final String code = getDataFromEditext(this.code, "Invalid Code", 6);
         if (isOkay) {
-            new Handler().postDelayed(new Runnable() {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     startAnim();
@@ -230,7 +230,7 @@ public class ScreenForgetPasswordStep2 extends AppCompatActivity {
     }
 
     public void onResendClick(View view) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.bg_main), context);
             if (resendToken != null) {
                 startAnim();
@@ -324,7 +324,7 @@ public class ScreenForgetPasswordStep2 extends AppCompatActivity {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             try {
-                new Handler().postDelayed(() -> stopAnim(), 0);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> stopAnim(), 0);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

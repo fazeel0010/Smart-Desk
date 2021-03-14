@@ -3,6 +3,7 @@ package com.smartdesk.screens.user_management.setting;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
@@ -40,7 +42,7 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.constants.PermisionCode;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.user_management.change_password.ScreenChangePassword;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.CustomEditext;
@@ -56,7 +58,9 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -70,8 +74,8 @@ public class ScreenConsumerSetting extends AppCompatActivity {
     MemoryCache memoryCache = new MemoryCache();
 
     private TextView title;
-    private TextView name, mobileNumber, gender;
-    private TextView  workplaceCity;
+    private TextView name, mobileNumber,dob, gender;
+    private TextView address;
     private CircleImageView profilePic;
 
     private String isProfileUrl = "";
@@ -79,7 +83,7 @@ public class ScreenConsumerSetting extends AppCompatActivity {
 
     private boolean isOkay;
 
-    private SignupMechanicDTO const_SettingData;
+    private SignupUserDTO const_SettingData;
 
     @Override
     protected void onDestroy() {
@@ -104,7 +108,7 @@ public class ScreenConsumerSetting extends AppCompatActivity {
     public void getData() {
         FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    const_SettingData = documentSnapshot.toObject(SignupMechanicDTO.class);
+                    const_SettingData = documentSnapshot.toObject(SignupUserDTO.class);
                     setData();
                 })
                 .addOnFailureListener(e -> {
@@ -125,7 +129,8 @@ public class ScreenConsumerSetting extends AppCompatActivity {
         name = findViewById(R.id.name);
         mobileNumber = findViewById(R.id.phoneNumber);
         gender = findViewById(R.id.gender);
-        workplaceCity = findViewById(R.id.city);
+        address = findViewById(R.id.address);
+        dob = findViewById(R.id.dob);
 
         profilePic = findViewById(R.id.profilePic);
     }
@@ -167,7 +172,7 @@ public class ScreenConsumerSetting extends AppCompatActivity {
     }
 
     public void changeProfilePic(View view) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             cameraReult = 1;
             isCameraOpen = false;
             imageName = "Profile";
@@ -189,7 +194,7 @@ public class ScreenConsumerSetting extends AppCompatActivity {
     }
 
     public void setData() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Constants.USER_NAME = const_SettingData.getWorkerName();
             Constants.USER_MOBILE = const_SettingData.getWorkerPhone();
             Constants.USER_PROFILE = const_SettingData.getProfilePicture();
@@ -198,6 +203,9 @@ public class ScreenConsumerSetting extends AppCompatActivity {
             name.setText(const_SettingData.getWorkerName());
             mobileNumber.setText(const_SettingData.getWorkerPhone());
             gender.setText(const_SettingData.getWorkerGender());
+            dob.setText(const_SettingData.getWorkerDob());
+            address.setText(const_SettingData.getWorkerLocation());
+            ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
 
             try {
                 isProfileUrl =const_SettingData.getProfilePicture();
@@ -213,7 +221,7 @@ public class ScreenConsumerSetting extends AppCompatActivity {
     }
 
     public void updateProfilePictureAPI() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
         }, 0);
     }
@@ -559,5 +567,31 @@ public class ScreenConsumerSetting extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private DatePickerDialog mDateListener;
+
+    public void dob(View view) {
+        final Calendar c = Calendar.getInstance();
+        String date = dob.getText().toString();
+        String date2[] = date.split("/");
+        mDateListener = new DatePickerDialog(this, R.style.dateTheme,(view1, year, month, dayOfMonth) -> {
+            c.set(year, month, dayOfMonth);
+            String date1 = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
+            dob.setText(date1);
+
+            startAnim();
+            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).
+                    update("workerDob", date1)
+                    .addOnSuccessListener(aVoid -> {
+                        stopAnim();
+                        getData();
+                    })
+                    .addOnFailureListener(e -> {
+                        stopAnim();
+                    });
+        }, Integer.valueOf(date2[2]), Integer.valueOf(date2[1]) - 1, Integer.valueOf(date2[0]));
+        mDateListener.getDatePicker().setMaxDate(System.currentTimeMillis());
+        mDateListener.show();
     }
 }

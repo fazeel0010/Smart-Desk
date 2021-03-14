@@ -142,7 +142,7 @@
                                             android:layout_gravity="center"
                                             android:adjustViewBounds="true"
                                             android:src="@drawable/icon_mobile"
-                                            android:tint="@color/forground2" />
+                                            app:tint="@color/forground2" />
 
                                         <TextView
                                             android:id="@+id/phoneNumber"
@@ -176,7 +176,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_gender"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -212,7 +212,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_cnic"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
 
                                 <TextView
                                     android:id="@+id/cnic"
@@ -246,10 +246,10 @@
                                     android:layout_marginTop="2dp"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_location_vector"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
 
                                 <TextView
-                                    android:id="@+id/city"
+                                    android:id="@+id/address1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
@@ -277,7 +277,7 @@
                                     android:layout_marginTop="2dp"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_time_simple"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
 
                                 <TextView
                                     android:id="@+id/timeAgo"
@@ -324,7 +324,7 @@
                                         android:layout_gravity="center"
                                         android:adjustViewBounds="true"
                                         android:src="@drawable/check_mark"
-                                        android:tint="@color/white" />
+                                        app:tint="@color/white" />
                                 </LinearLayout>
 
                                 <TextView
@@ -398,7 +398,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_shop"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -442,7 +442,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_contact"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -486,7 +486,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_category"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -530,7 +530,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_working_category"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -574,7 +574,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_location_vector"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -699,7 +699,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_gravity="center"
                                         android:adjustViewBounds="true"
-                                        android:src="@drawable/icon_mechanic" />
+                                        android:src="@drawable/icon_users" />
                                 </LinearLayout>
 
                                 <TextView

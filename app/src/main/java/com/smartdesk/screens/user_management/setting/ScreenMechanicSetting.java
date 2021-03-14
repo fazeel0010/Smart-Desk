@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
@@ -27,7 +28,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +47,7 @@ import com.smartdesk.screens.user_management.change_password.ScreenChangePasswor
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.CustomEditext;
 import com.smartdesk.utility.memory.MemoryCache;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -73,13 +73,13 @@ import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 public class ScreenMechanicSetting extends AppCompatActivity implements TextView.OnEditorActionListener {
 
     private Activity context;
-    private SignupMechanicDTO const_SettingData;
+    private SignupUserDTO const_SettingData;
 
     MemoryCache memoryCache = new MemoryCache();
 
     private TextView title;
-    private TextView name, mobileNumber, cnicNumber, dob, gender;
-    private TextView workplaceName, workplaceNumber, workplaceAddress, workplaceCategory, workplaceWorkingCategory, workplaceCity;
+    private TextView name, mobileNumber, dob, gender;
+    private TextView address;
     private CircleImageView profilePic;
 
     private String isProfileUrl = "";
@@ -112,7 +112,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     public void getData() {
         FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    const_SettingData = documentSnapshot.toObject(SignupMechanicDTO.class);
+                    const_SettingData = documentSnapshot.toObject(SignupUserDTO.class);
                     setData();
                 })
                 .addOnFailureListener(e -> {
@@ -133,16 +133,9 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         name = findViewById(R.id.name);
         name.setOnEditorActionListener(this);
         mobileNumber = findViewById(R.id.phoneNumber);
-        cnicNumber = findViewById(R.id.cnic);
         dob = findViewById(R.id.dob);
         gender = findViewById(R.id.gender);
-
-        workplaceName = findViewById(R.id.shopName);
-        workplaceNumber = findViewById(R.id.shopNumber);
-        workplaceCategory = findViewById(R.id.workPlaceCategory);
-        workplaceWorkingCategory = findViewById(R.id.workingCategory);
-        workplaceAddress = findViewById(R.id.workplaceAddress);
-        workplaceCity = findViewById(R.id.city);
+        address = findViewById(R.id.address);
 
         profilePic = findViewById(R.id.profilePic);
     }
@@ -199,7 +192,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     }
 
     public void changeProfilePic(View view) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             cameraReult = 1;
             isCameraOpen = false;
             imageName = "Profile";
@@ -224,7 +217,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         final Calendar c = Calendar.getInstance();
         String date = dob.getText().toString();
         String date2[] = date.split("/");
-        mDateListener = new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+        mDateListener = new DatePickerDialog(this,R.style.dateTheme, (view1, year, month, dayOfMonth) -> {
             c.set(year, month, dayOfMonth);
             String date1 = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
             dob.setText(date1);
@@ -245,12 +238,9 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     }
 
     public void setData() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (const_SettingData != null) {
 
-                ((RatingBar) findViewById(R.id.rating)).setClickable(false);
-                ((RatingBar) findViewById(R.id.rating)).setRating(UtilityFunctions.calculateRating(const_SettingData.getRatingUserCount(), const_SettingData.getRatingTotal()));
-                ((TextView) findViewById(R.id.userReviews)).setText(const_SettingData.getRatingUserCount() + " user reviews");
                 Constants.USER_NAME = const_SettingData.getWorkerName();
                 Constants.USER_MOBILE = const_SettingData.getWorkerPhone();
                 Constants.USER_PROFILE = const_SettingData.getProfilePicture();
@@ -262,8 +252,8 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
                 mobileNumber.setText(const_SettingData.getWorkerPhone());
                 gender.setText(const_SettingData.getWorkerGender());
                 dob.setText(const_SettingData.getWorkerDob());
-
-                workplaceAddress.setText(const_SettingData.getShopLocation());
+                address.setText(const_SettingData.getWorkerLocation());
+                ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
 
                 try {
                     if (const_SettingData.getProfilePicture() != null)
@@ -279,21 +269,21 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     }
 
     public void updateBackCnicPictureAPI() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startAnim();
             startAnim();
         }, 0);
     }
 
     public void updateFrontCnicPictureAPI() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startAnim();
             startAnim();
         }, 0);
     }
 
     public void updateProfilePictureAPI() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startAnim();
             startAnim();
         }, 0);

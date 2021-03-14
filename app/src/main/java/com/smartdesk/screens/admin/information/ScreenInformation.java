@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +16,7 @@ import android.widget.TextView;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,8 +27,9 @@ public class ScreenInformation extends AppCompatActivity {
 
     private Activity context;
 
-    Integer activeTotalUsers = 0, activeTotalMechanics = 0;
-    Integer blockedTotalUsers = 0, blockedTotalMechanics = 0;
+    Integer activeTotalManagers = 0, activeTotalDeskUser = 0;
+    Integer blockedTotalManagers = 0, blockedTotalDeskUser = 0;
+    Integer requestNewTotalManagers = 0, requestNewTotalDeskUser = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,26 +48,33 @@ public class ScreenInformation extends AppCompatActivity {
         new MemoryCache().clear();
     }
 
+    @SuppressLint("SetTextI18n")
     public void getData() {
         startAnim();
         FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     stopAnim();
-                    List<SignupMechanicDTO> users = queryDocumentSnapshots.toObjects(SignupMechanicDTO.class);
-                    for (SignupMechanicDTO obj : users) {
-                        if (obj.getUserStatus().equalsIgnoreCase(Constants.activeStatus) && obj.getRole().equals(Constants.consumerRole))
-                            activeTotalUsers++;
-                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.blockedStatus) && obj.getRole().equals(Constants.consumerRole))
-                            blockedTotalUsers++;
-                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.activeStatus) && obj.getRole().equals(Constants.workerRole))
-                            activeTotalMechanics++;
-                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.blockedStatus) && obj.getRole().equals(Constants.workerRole))
-                            blockedTotalMechanics++;
+                    List<SignupUserDTO> users = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+                    for (SignupUserDTO obj : users) {
+                        if (obj.getUserStatus().equalsIgnoreCase(Constants.activeStatus) && obj.getRole().equals(Constants.managerRole))
+                            activeTotalManagers++;
+                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.blockedStatus) && obj.getRole().equals(Constants.managerRole))
+                            blockedTotalManagers++;
+                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.activeStatus) && obj.getRole().equals(Constants.deskUserRole))
+                            activeTotalDeskUser++;
+                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.blockedStatus) && obj.getRole().equals(Constants.deskUserRole))
+                            blockedTotalDeskUser++;
+                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.newAccountStatus) && obj.getRole().equals(Constants.deskUserRole))
+                            requestNewTotalDeskUser++;
+                        else if (obj.getUserStatus().equalsIgnoreCase(Constants.newAccountStatus) && obj.getRole().equals(Constants.managerRole))
+                            requestNewTotalManagers++;
                     }
-                    ((TextView) findViewById(R.id.activeTotalUsers)).setText("" + activeTotalUsers);
-                    ((TextView) findViewById(R.id.activeTotalMechanics)).setText("" + activeTotalMechanics);
-                    ((TextView) findViewById(R.id.blockedTotalUsers)).setText("" + blockedTotalUsers);
-                    ((TextView) findViewById(R.id.blockedTotalMechanics)).setText("" + blockedTotalMechanics);
+                    ((TextView) findViewById(R.id.activeTotalManager)).setText("" + activeTotalManagers);
+                    ((TextView) findViewById(R.id.activeTotalDeskUser)).setText("" + activeTotalDeskUser);
+                    ((TextView) findViewById(R.id.blockedTotalManagers)).setText("" + blockedTotalManagers);
+                    ((TextView) findViewById(R.id.blockedTotalDeskUser)).setText("" + blockedTotalDeskUser);
+                    ((TextView) findViewById(R.id.registerNewTotalDeskUser)).setText("" + requestNewTotalDeskUser);
+                    ((TextView) findViewById(R.id.registerNewTotalManager)).setText("" + requestNewTotalManagers);
                 })
                 .addOnFailureListener(e -> {
                     stopAnim();
@@ -81,7 +90,7 @@ public class ScreenInformation extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.icon_chevron_left_blue));
+        getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(context, R.drawable.icon_chevron_left_blue));
     }
 
     @Override

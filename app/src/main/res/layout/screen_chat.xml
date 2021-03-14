@@ -73,7 +73,7 @@
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
                 android:src="@drawable/icon_send_btn"
-                android:tint="@color/red"/>
+                app:tint="@color/red"/>
         </LinearLayout>
     </LinearLayout>
 

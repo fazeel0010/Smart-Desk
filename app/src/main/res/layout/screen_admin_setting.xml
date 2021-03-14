@@ -144,7 +144,7 @@
                                     android:paddingTop="4dp"
                                     android:paddingEnd="4dp"
                                     android:text="Name"
-                                    android:textColor="@color/white"
+                                    android:textColor="@color/black_color"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
 
@@ -203,7 +203,7 @@
                                     android:paddingTop="4dp"
                                     android:paddingEnd="4dp"
                                     android:text="Mobile Number"
-                                    android:textColor="@color/white"
+                                    android:textColor="@color/black_color"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
 
@@ -212,7 +212,6 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="2dp"
-
                                     android:padding="4dp"
                                     android:text="07-123456789"
                                     android:textColor="@color/forground2"
@@ -260,8 +259,64 @@
                                     android:paddingStart="4dp"
                                     android:paddingTop="4dp"
                                     android:paddingEnd="4dp"
+                                    android:text="Email Number"
+                                    android:textColor="@color/black_color"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/email"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="2dp"
+                                    android:padding="4dp"
+                                    android:text="smartdesk0010@gmail.com"
+                                    android:textColor="@color/forground2"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="@drawable/selector_editext"
+                                android:backgroundTint="@color/SmartDesk_Blue"
+                                android:clickable="true"
+                                android:gravity="center">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="10dp"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/icon_cnic"
+                                    app:tint="@color/white" />
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.9"
+                                android:background="@drawable/shape_top_bottom_left_radius"
+                                android:backgroundTint="@color/SmartDesk_Editext_red"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="4dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingEnd="4dp"
                                     android:text="Gender"
-                                    android:textColor="@color/white"
+                                    android:textColor="@color/black_color"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
 
@@ -299,122 +354,7 @@
                             </LinearLayout>
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="12dp"
-                            android:gravity="center">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.9"
-                                android:background="@drawable/shape_top_bottom_left_radius"
-                                android:backgroundTint="@color/SmartDesk_Editext_red"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:paddingStart="4dp"
-                                    android:paddingTop="4dp"
-                                    android:paddingEnd="4dp"
-                                    android:text="City"
-                                    android:textColor="@color/white"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/city"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="2dp"
-
-                                    android:padding="4dp"
-                                    android:text="Karachi"
-                                    android:textColor="@color/forground2"
-                                    android:textSize="16sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:background="@drawable/selector_editext"
-                                android:backgroundTint="@color/SmartDesk_Blue"
-                                android:clickable="true"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center"
-                                    android:layout_margin="10dp"
-                                    android:adjustViewBounds="true"
-                                    android:src="@drawable/icon_city"
-                                    app:tint="@color/white" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="12dp"
-                            android:gravity="center">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.9"
-                                android:background="@drawable/shape_top_bottom_left_radius"
-                                android:backgroundTint="@color/SmartDesk_Editext_red"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:paddingStart="4dp"
-                                    android:paddingTop="4dp"
-                                    android:paddingEnd="4dp"
-                                    android:text="Working Category"
-                                    android:textColor="@color/white"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/workingCategory"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="2dp"
-
-                                    android:padding="4dp"
-                                    android:text="Car Mechanic"
-                                    android:textColor="@color/forground2"
-                                    android:textSize="16sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:background="@drawable/selector_editext"
-                                android:backgroundTint="@color/SmartDesk_Blue"
-                                android:clickable="true"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center"
-                                    android:layout_margin="10dp"
-                                    android:adjustViewBounds="true"
-                                    android:clickable="true"
-                                    android:src="@drawable/icon_working_category"
-                                    app:tint="@color/white" />
-                            </LinearLayout>
-                        </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"

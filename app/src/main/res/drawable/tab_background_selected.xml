@@ -5,6 +5,6 @@
     <!-- radius should be half of the desired TabLayout height -->
     <!-- color of the selected tab -->
     <solid
-        android:color="@color/SmartDesk_Editext_red"/>
+        android:color="@color/red"/>
 
 </shape>

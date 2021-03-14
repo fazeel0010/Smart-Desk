@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,16 +18,15 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenLoginBinding;
-import com.smartdesk.screens.worker.track_consumer.ScreenTrackConsumerHired;
+import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
+import com.smartdesk.screens.manager_screens.sign_up.ScreenMangerSignup;
 import com.smartdesk.screens.user_management.forget_password.ScreenForgetPasswordStep1;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.encryption.EncryptPassword;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.admin._home.ScreenAdminHome;
-import com.smartdesk.screens.consumer._home.ScreenConsumerHome;
-import com.smartdesk.screens.consumer.track_mechanic.ScreenTrackMechanic;
-import com.smartdesk.screens.worker._home.ScreenWorkerHome;
-import com.smartdesk.screens.worker.sign_up.ScreenWorkerSignup;
+import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
+import com.smartdesk.screens.desk_users_screens.sign_up.ScreenDeskUserSignup;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
@@ -73,13 +71,13 @@ public class ScreenLogin extends AppCompatActivity {
     public void signUP(View view) {
         try {
             UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.bg_main), context);
-            Constants.const_MechanicSignupDTO = null;
+            Constants.const_usersSignupDTO = null;
             Constants.const_ConsumerSignupDTO = null;
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.bottomDialogTheme);
             View bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_registration, findViewById(R.id.bottom_view));
 
-            bottomView.findViewById(R.id.WorkerRegistration).setOnClickListener(v -> UtilityFunctions.sendIntentNormal(context, new Intent(ScreenLogin.this, ScreenWorkerSignup.class), false, 0));
-            bottomView.findViewById(R.id.MangerRegistration).setOnClickListener(v -> Toast.makeText(context,"Not Implemented Yet",Toast.LENGTH_SHORT).show());
+            bottomView.findViewById(R.id.WorkerRegistration).setOnClickListener(v -> UtilityFunctions.sendIntentNormal(context, new Intent(ScreenLogin.this, ScreenDeskUserSignup.class), false, 0));
+            bottomView.findViewById(R.id.MangerRegistration).setOnClickListener(v -> UtilityFunctions.sendIntentNormal(context, new Intent(ScreenLogin.this, ScreenMangerSignup.class), false, 0));
             bottomSheetDialog.setContentView(bottomView);
             bottomSheetDialog.show();
         }catch (Exception ex){
@@ -125,66 +123,56 @@ public class ScreenLogin extends AppCompatActivity {
         if (isOkay) {
             try {
                 mobile = mobile.replaceAll("-", "");
-                System.out.println(mobile);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
             final String finalMobile = mobile;
             final String finalPass = pass;
-            new Handler(Looper.getMainLooper()).postDelayed(() -> new Handler().postDelayed((Runnable) () -> {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> new Handler(Looper.getMainLooper()).postDelayed((Runnable) () -> {
                 startAnim();
                 Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", finalMobile);
                 queryNumber.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     new Thread(() -> {
-                        List<SignupMechanicDTO> signupMechanicDTO = queryDocumentSnapshots.toObjects(SignupMechanicDTO.class);
-                        if (signupMechanicDTO.isEmpty()) {
+                        List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+                        if (signupUserDTO.isEmpty()) {
                             stopAnimOnUIThread();
                             UtilityFunctions.orangeSnackBar(context, "Phone Number is not Registered!", Snackbar.LENGTH_LONG);
                         } else {
                             String decryptPassword = "";
                             try {
-                                decryptPassword = EncryptPassword.passwordDecryption(signupMechanicDTO.get(0).getWorkerPassword());
+                                decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.get(0).getWorkerPassword());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             stopAnimOnUIThread();
                             if (decryptPassword.equals(finalPass)) {
                                 UtilityFunctions.scheduleJob(this, true);
-                                if (signupMechanicDTO.get(0).getUserStatus().equals(Constants.activeStatus)) {
+                                if (signupUserDTO.get(0).getUserStatus().equals(Constants.activeStatus)) {
                                     String documentID = "";
                                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                                         documentID = document.getId();
                                         break;
                                     }
                                     Constants.USER_DOCUMENT_ID = documentID;
-                                    Constants.USER_NAME = signupMechanicDTO.get(0).getWorkerName();
-                                    Constants.USER_PROFILE = signupMechanicDTO.get(0).getProfilePicture();
-                                    Constants.USER_MOBILE = signupMechanicDTO.get(0).getWorkerPhone();
+                                    Constants.USER_NAME = signupUserDTO.get(0).getWorkerName();
+                                    Constants.USER_PROFILE = signupUserDTO.get(0).getProfilePicture();
+                                    Constants.USER_MOBILE = signupUserDTO.get(0).getWorkerPhone();
                                     UtilityFunctions.saveLoginCredentialsInSharedPreference(context, finalMobile, finalPass, documentID, true);
                                     UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
 
-                                    if (signupMechanicDTO.get(0).getRole() == Constants.adminRole) {
+                                    if (signupUserDTO.get(0).getRole() == Constants.adminRole) {
                                         System.out.println("admin");
                                         Constants.USER_ROLE = Constants.adminRole;
                                         UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
-                                    } else if (signupMechanicDTO.get(0).getRole() == Constants.workerRole) {
-                                        System.out.println("Mechanic");
-                                        Constants.USER_ROLE = Constants.workerRole;
-                                        Constants.USER_MECHANIC_ONLINE = signupMechanicDTO.get(0).getOnline();
-                                        if (!signupMechanicDTO.get(0).getHired())
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenWorkerHome.class), true, Constants.changeIntentDelay);
-                                        else
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenTrackConsumerHired.class), true, Constants.changeIntentDelay);
-                                    } else if (signupMechanicDTO.get(0).getRole() == Constants.consumerRole) {
-                                        System.out.println("Consumer");
-                                        Constants.USER_ROLE = Constants.consumerRole;
-                                        if (!signupMechanicDTO.get(0).getHired())
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenConsumerHome.class), true, Constants.changeIntentDelay);
-                                        else
-                                            UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenTrackMechanic.class), true, Constants.changeIntentDelay);
+                                    } else if (signupUserDTO.get(0).getRole() == Constants.deskUserRole) {
+                                        Constants.USER_ROLE = Constants.deskUserRole;
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserHome.class), true, Constants.changeIntentDelay);
+                                    } else if (signupUserDTO.get(0).getRole() == Constants.managerRole) {
+                                        Constants.USER_ROLE = Constants.managerRole;
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManagerHome.class), true, Constants.changeIntentDelay);
                                     }
                                 } else {
-                                    UtilityFunctions.alertNoteWithOkButton(context, "Account Status", signupMechanicDTO.get(0).getUserStatus(), Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
+                                    UtilityFunctions.alertNoteWithOkButton(context, "Account Status", signupUserDTO.get(0).getUserStatus(), Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
                                 }
 
                             } else {

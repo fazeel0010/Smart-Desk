@@ -103,7 +103,7 @@
                                 android:layout_gravity="center"
                                 android:adjustViewBounds="true"
                                 android:src="@drawable/icon_mobile"
-                                android:tint="@color/forground2" />
+                                app:tint="@color/forground2" />
 
                             <TextView
                                 android:id="@+id/phoneNumber"

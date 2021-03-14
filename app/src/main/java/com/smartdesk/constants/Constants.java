@@ -5,14 +5,12 @@ import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
 
 import com.smartdesk.model.hire_worker.WorkerRequestDTO;
-import com.smartdesk.model.signup.SignupConsumerDTO;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 
 public class Constants {
 
     //    public static final String topicPrefix = "/topics/";
-    public static final String api_key = "AIzaSyAnc_7jgTVaZ6VqjKP7F-ccU4Nay1R7RTo";
-//    public static final String smartDeskLogo = "https://firebasestorage.googleapis.com/v0/b/autoxpert-0010.appspot.com/o/z_png_logo_for_splash_screen.png?alt=media&token=bb53bd2b-9001-4236-a91f-f6c189d5ab88";
+    public static final String api_key = "AIzaSyAJwu52r7NzrZFYKsLW7zT8lVdvfWe1AF8";
     public static final String smartDeskLogo = "https://thumbs.dreamstime.com/z/gold-smart-table-lamp-system-icon-isolated-black-background-internet-things-concept-wireless-connection-vector-187995951.jpg";
 
     //SmartDesk email
@@ -22,8 +20,8 @@ public class Constants {
 
     //Roles
     public static Integer adminRole = 1;
-    public static Integer workerRole = 2;
-    public static Integer consumerRole = 3;
+    public static Integer managerRole = 2;
+    public static Integer deskUserRole = 3;
 
     //User Details Constants
     public static Integer USER_ROLE;
@@ -41,8 +39,8 @@ public class Constants {
     public static final String SP_ISLOGIN = "isLogin";
 
     //Dto COnstants
-    public static SignupMechanicDTO const_MechanicSignupDTO;
-    public static SignupConsumerDTO const_ConsumerSignupDTO;
+    public static SignupUserDTO const_usersSignupDTO;
+    public static SignupUserDTO const_ConsumerSignupDTO;
     public static WorkerRequestDTO const_WorkerRequestDTO;
     public static Integer DISTANCE;
     public static String WORKPLACE_TYPE;

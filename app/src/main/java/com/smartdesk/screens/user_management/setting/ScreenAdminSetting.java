@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
@@ -43,7 +44,7 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.constants.PermisionCode;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.user_management.change_password.ScreenChangePassword;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.CustomEditext;
@@ -75,7 +76,6 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
 
     private TextView title;
     private TextView name, mobileNumber, gender;
-    private TextView workplaceWorkingCategory, workplaceCity;
     private CircleImageView profilePic;
 
     private String isProfileUrl = "";
@@ -86,7 +86,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
     private Spinner genderSpinner;
     private boolean isGenderSelected = false;
 
-    private SignupMechanicDTO const_SettingData;
+    private SignupUserDTO const_SettingData;
 
     @Override
     protected void onDestroy() {
@@ -103,7 +103,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
         actionBar("Settings");
         initLoadingBarItems();
         initIds();
-        UtilityFunctions.setupUI(findViewById(R.id.parent), this);
+        UtilityFunctions.setupUI(findViewById(R.id.parent), context);
         clearCache();
         getData();
     }
@@ -111,7 +111,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
     public void getData() {
         FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    const_SettingData = documentSnapshot.toObject(SignupMechanicDTO.class);
+                    const_SettingData = documentSnapshot.toObject(SignupUserDTO.class);
                     setData();
                 })
                 .addOnFailureListener(e -> {
@@ -132,9 +132,6 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
         name = findViewById(R.id.name);
         mobileNumber = findViewById(R.id.phoneNumber);
         gender = findViewById(R.id.gender);
-
-        workplaceWorkingCategory = findViewById(R.id.workingCategory);
-        workplaceCity = findViewById(R.id.city);
 
         profilePic = findViewById(R.id.profilePic);
     }
@@ -186,7 +183,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
     }
 
     public void changeProfilePic(View view) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             cameraReult = 1;
             isCameraOpen = false;
             imageName = "Profile";
@@ -207,7 +204,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
     }
 
     public void setData() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Constants.USER_NAME = const_SettingData.getWorkerName();
             Constants.USER_MOBILE = const_SettingData.getWorkerPhone();
             Constants.USER_PROFILE = const_SettingData.getProfilePicture();
@@ -216,6 +213,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
             name.setText(const_SettingData.getWorkerName());
             mobileNumber.setText(const_SettingData.getWorkerPhone());
             gender.setText(const_SettingData.getWorkerGender());
+            ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
 
             try {
                 isProfileUrl = const_SettingData.getProfilePicture();
@@ -231,7 +229,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
     }
 
     public void updateProfilePictureAPI() {
-        new Handler().postDelayed(() -> startAnim(), 0);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> startAnim(), 0);
     }
 
 

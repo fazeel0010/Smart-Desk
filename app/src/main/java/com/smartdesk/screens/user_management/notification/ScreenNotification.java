@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +70,7 @@ public class ScreenNotification extends AppCompatActivity {
     private void initIds() {
         swipeRefreshLayout = findViewById(R.id.swipeToRefresh);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.SmartDesk_Editext_red), ContextCompat.getColor(context, R.color.SmartDesk_Blue));
-        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> showDataOnList(true), 0));
+        swipeRefreshLayout.setOnRefreshListener(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> showDataOnList(true), 0));
     }
 
     public void actionBar(String actionTitle) {
@@ -101,7 +102,7 @@ public class ScreenNotification extends AppCompatActivity {
     }
 
     public void showDataOnList(Boolean isSwipe) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isSwipe)
                 startAnim();
             System.out.println(Constants.USER_DOCUMENT_ID + "#################################");
@@ -142,7 +143,7 @@ public class ScreenNotification extends AppCompatActivity {
     }
 
     public void setRecyclerView() {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             adapter = new Adapter(notificationLocalDTOArrayList);
             recyclerView = UtilityFunctions.setRecyclerView(findViewById(R.id.recycler_view), context);
             recyclerView.setAdapter(adapter);

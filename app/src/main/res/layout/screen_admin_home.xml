@@ -126,8 +126,8 @@
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/profilePic"
-                                android:layout_width="60dp"
-                                android:layout_height="60dp"
+                                android:layout_width="65dp"
+                                android:layout_height="65dp"
                                 android:src="@drawable/side_profile_icon"
                                 app:civ_border_color="@color/white"
                                 app:civ_border_width="1dp" />
@@ -157,6 +157,14 @@
                                 android:text="0300-0000000"
                                 android:textColor="@color/white"
                                 android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_marginTop="6dp"
+                                android:text="Admin"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -177,20 +185,84 @@
                             android:orientation="vertical">
 
                             <LinearLayout
-                                android:id="@+id/LL_nav_Workers"
+                                android:id="@+id/LL_nav_Manger_Request"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
                                 android:background="@drawable/ripple_linear_white"
                                 android:clickable="true"
-                                android:onClick="blockedMechanics">
+                                android:onClick="ManagerRequests">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:paddingStart="16dp"
-                                    android:src="@drawable/icon_mechanic" />
+                                    android:src="@drawable/icon_users" />
+
+                                <TextView
+                                    android:id="@+id/nav_Manager_Request"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/segoeui"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="8dp"
+                                    android:paddingBottom="8dp"
+                                    android:text="Managers"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:id="@+id/LL_nav_Manger"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:background="@drawable/ripple_linear_white"
+                                android:clickable="true"
+                                android:onClick="blockedManager">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:paddingStart="16dp"
+                                    android:src="@drawable/icon_users" />
+
+                                <TextView
+                                    android:id="@+id/nav_Manager"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/segoeui"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="8dp"
+                                    android:paddingBottom="8dp"
+                                    android:text="Blocked Managers"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:id="@+id/LL_nav_Workers"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:background="@drawable/ripple_linear_white"
+                                android:clickable="true"
+                                android:onClick="blockedDeskUsers">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:paddingStart="16dp"
+                                    android:src="@drawable/icon_users" />
 
                                 <TextView
                                     android:id="@+id/nav_Tasks"
@@ -201,7 +273,7 @@
                                     android:paddingStart="8dp"
                                     android:paddingTop="8dp"
                                     android:paddingBottom="8dp"
-                                    android:text="Blocked Workers"
+                                    android:text="Blocked Desk-Uers"
                                     android:textColor="@color/white"
                                     android:textSize="18sp"
                                     android:textStyle="normal" />

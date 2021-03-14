@@ -16,7 +16,7 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.Query;
@@ -67,7 +67,7 @@ public class ScreenForgetPasswordStep1 extends AppCompatActivity {
         }
         if (isOkay) {
             String finalNumber = number;
-            new Handler().postDelayed(() -> {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 startAnim();
                 Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", finalNumber);
                 queryNumber.get().addOnCompleteListener(task -> {
@@ -83,8 +83,8 @@ public class ScreenForgetPasswordStep1 extends AppCompatActivity {
                                     Constants.USER_DOCUMENT_ID = document.getId();
                                     break;
                                 }
-                                List<SignupMechanicDTO> signupMechanicDTO = task.getResult().toObjects(SignupMechanicDTO.class);
-                                Constants.const_MechanicSignupDTO = signupMechanicDTO.get(0);
+                                List<SignupUserDTO> signupUserDTO = task.getResult().toObjects(SignupUserDTO.class);
+                                Constants.const_usersSignupDTO = signupUserDTO.get(0);
                                 Constants.USER_MOBILE = finalNumber;
                                 UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenForgetPasswordStep2.class), true, 0);
                             }

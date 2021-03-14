@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.smartdesk.constants.Constants;
-import com.smartdesk.screens.consumer.workers_in_map.FragmentMapView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -33,7 +32,6 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 
 public class FusedLocation extends Service {
 
-    private FragmentMapView fragmentMapView;
     private Boolean isAddressSet;
     Activity context;
 
@@ -45,16 +43,16 @@ public class FusedLocation extends Service {
         this.isAddressSet = isAddressSet;
     }
 
-    public FusedLocation(Activity context, Boolean isAddressSet, FragmentMapView fragmentMapView) {
-        this.context = context;
-        this.isAddressSet = isAddressSet;
-        this.fragmentMapView = fragmentMapView;
-    }
+//    public FusedLocation(Activity context, Boolean isAddressSet, FragmentMapView fragmentMapView) {
+//        this.context = context;
+//        this.isAddressSet = isAddressSet;
+//        this.fragmentMapView = fragmentMapView;
+//    }
 
 
     private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 1000;  /* 1 sec */
-    private long FASTEST_INTERVAL = 1000; /* 1 sec */
+    private long UPDATE_INTERVAL = 1000 * 30;  /* 1 sec */
+    private long FASTEST_INTERVAL = 1000 * 30; /* 1 sec */
     Boolean isService;
     Boolean isFirst = true;
 
@@ -160,8 +158,6 @@ public class FusedLocation extends Service {
             isAddressSet = true;
             if (Constants.addressEditext != null)
                 Constants.addressEditext.setText(getAddressLatLng(context, Constants.const_lat, Constants.const_lng));
-            if (fragmentMapView != null)
-                fragmentMapView.setCurrentLocation();
         }
     }
 

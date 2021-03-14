@@ -6,7 +6,7 @@
     android:background="@color/tumblr_logo_dark"
     android:layout_height="match_parent"
     android:id="@+id/parent"
-    tools:context="com.smartdesk.screens.worker.user_requests.ScreenUserRequest">
+    tools:context="com.smartdesk.screens.desk_users_screens.user_requests.ScreenDeskUserRequest">
 
     <include
         android:id="@+id/actionbarInclude"

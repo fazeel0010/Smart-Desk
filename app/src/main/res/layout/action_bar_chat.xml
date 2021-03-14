@@ -82,7 +82,7 @@
                     android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:src="@drawable/icon_call"
-                    android:tint="@color/white" />
+                    app:tint="@color/white" />
             </LinearLayout>
         </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>

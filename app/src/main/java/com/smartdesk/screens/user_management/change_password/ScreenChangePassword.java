@@ -21,7 +21,7 @@ import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.encryption.EncryptPassword;
-import com.smartdesk.model.signup.SignupMechanicDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -119,13 +119,13 @@ public class ScreenChangePassword extends AppCompatActivity {
     }
 
     public void changePasswordAPI(String oldPassowrd, String newPassword) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startAnim();
             FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID)
                     .get().addOnSuccessListener(documentSnapshot -> {
                 new Thread(() -> {
                     try {
-                        String pass = EncryptPassword.passwordDecryption(documentSnapshot.toObject(SignupMechanicDTO.class).getWorkerPassword());
+                        String pass = EncryptPassword.passwordDecryption(documentSnapshot.toObject(SignupUserDTO.class).getWorkerPassword());
                         if (oldPassowrd.equals(pass)) {
                             String newPass = EncryptPassword.passwordEncryption(newPassword);
                             FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID)

@@ -134,7 +134,7 @@
                                 android:layout_gravity="center"
                                 android:adjustViewBounds="true"
                                 android:src="@drawable/icon_mobile"
-                                android:tint="@color/forground2" />
+                                app:tint="@color/forground2" />
 
                             <TextView
                                 android:id="@+id/phoneNumber"
@@ -201,7 +201,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/info_mark"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -238,7 +238,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/icon_request"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -274,7 +274,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="15dp"
                 android:src="@drawable/icon_call"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

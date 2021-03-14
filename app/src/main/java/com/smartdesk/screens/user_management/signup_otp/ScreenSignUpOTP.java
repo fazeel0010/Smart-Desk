@@ -23,7 +23,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
@@ -81,8 +80,8 @@ public class ScreenSignUpOTP extends AppCompatActivity {
         listenerOTPCode();
         initLoadingBarItems();
         UtilityFunctions.setupUI(findViewById(R.id.bg_main), context);
-        if (Constants.const_MechanicSignupDTO != null)
-            phoneNumber = Constants.const_MechanicSignupDTO.getWorkerPhone();
+        if (Constants.const_usersSignupDTO != null)
+            phoneNumber = Constants.const_usersSignupDTO.getWorkerPhone();
         else
             phoneNumber = Constants.const_ConsumerSignupDTO.getWorkerPhone();
         phoneAuthticate();
@@ -226,7 +225,7 @@ public class ScreenSignUpOTP extends AppCompatActivity {
         isOkay = true;
         final String code = getDataFromEditext(this.code, "Invalid Code", 6);
         if (isOkay) {
-            new Handler().postDelayed(() -> {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 verifyVerificationCode(codeOtp);
             }, 0);
         } else
@@ -246,7 +245,7 @@ public class ScreenSignUpOTP extends AppCompatActivity {
     }
 
     public void onResendClick(View view) {
-        new Handler().postDelayed(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.bg_main), context);
             if (resendToken != null) {
                 startAnim();
@@ -330,7 +329,7 @@ public class ScreenSignUpOTP extends AppCompatActivity {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             try {
-                new Handler().postDelayed(() -> stopAnim(), 0);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> stopAnim(), 0);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -369,19 +368,17 @@ public class ScreenSignUpOTP extends AppCompatActivity {
                         Log.d("OTP", "signInWithCredential:success");
                         FirebaseUser user = task.getResult().getUser();
                         startAnim();
-                        if (Constants.const_MechanicSignupDTO != null) {
-                            Constants.const_MechanicSignupDTO.setUuID(user.getUid());
-                            Constants.const_MechanicSignupDTO.setRegistrationDate(new Timestamp(new Date().getTime()));
-                            Constants.const_MechanicSignupDTO.setUserStatus(Constants.newAccountStatus);
-                            Constants.const_MechanicSignupDTO.setRatingUserCount(0);
-                            Constants.const_MechanicSignupDTO.setRatingTotal(0);
-                            Constants.const_MechanicSignupDTO.setWorkerPassword(EncryptPassword.passwordEncryption(Constants.const_MechanicSignupDTO.getWorkerPassword()));
-                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).add(Constants.const_MechanicSignupDTO).addOnCompleteListener(task1 -> {
+                        if (Constants.const_usersSignupDTO != null) {
+                            Constants.const_usersSignupDTO.setUuID(user.getUid());
+                            Constants.const_usersSignupDTO.setRegistrationDate(new Timestamp(new Date().getTime()));
+                            Constants.const_usersSignupDTO.setUserStatus(Constants.newAccountStatus);
+                            Constants.const_usersSignupDTO.setWorkerPassword(EncryptPassword.passwordEncryption(Constants.const_usersSignupDTO.getWorkerPassword()));
+                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).add(Constants.const_usersSignupDTO).addOnCompleteListener(task1 -> {
                                 stopAnim();
 
-                                UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.const_MechanicSignupDTO.getWorkerPhone(), Constants.const_MechanicSignupDTO.getWorkerPassword(), task1.getResult().getId(), false);
-                                UtilityFunctions.sendFCMMessage(context, new Data(FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()).getTime(), "registration", Constants.const_MechanicSignupDTO.getWorkerName() + " Verification", "worker registration request for verification"));
-                                UtilityFunctions.saveNotficationCollection(new NotificationDTO(Constants.adminRole, FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()), Constants.const_MechanicSignupDTO.getWorkerName() + " Verification", "worker registration request for verification", false));
+                                UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.const_usersSignupDTO.getWorkerPhone(), Constants.const_usersSignupDTO.getWorkerPassword(), task1.getResult().getId(), false);
+                                UtilityFunctions.sendFCMMessage(context, new Data(FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()).getTime(), "registration", Constants.const_usersSignupDTO.getWorkerName() + " Verification", "worker registration request for verification"));
+                                UtilityFunctions.saveNotficationCollection(new NotificationDTO(Constants.adminRole, FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()), Constants.const_usersSignupDTO.getWorkerName() + " Verification", "worker registration request for verification", false));
 
                                 UtilityFunctions.alertNoteWithOkButton(context, "Account Registered", "Your account registered successfully", Gravity.CENTER, R.color.whatsapp_green_dark, R.color.white, true, false, new Intent(context, ScreenLogin.class));
                             }).addOnFailureListener(e -> {

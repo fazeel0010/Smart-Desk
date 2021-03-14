@@ -125,7 +125,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_contact"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -169,7 +169,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_category"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -213,7 +213,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_working_category"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -257,7 +257,7 @@
                                     android:layout_gravity="center"
                                     android:adjustViewBounds="true"
                                     android:src="@drawable/icon_location_vector"
-                                    android:tint="@color/forground2" />
+                                    app:tint="@color/forground2" />
                             </LinearLayout>
 
                             <TextView
@@ -322,7 +322,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/info_mark"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -356,7 +356,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="15dp"
                 android:src="@drawable/icon_call"
-                android:tint="@color/white" />
+                app:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
