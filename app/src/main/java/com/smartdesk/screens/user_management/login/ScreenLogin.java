@@ -72,7 +72,7 @@ public class ScreenLogin extends AppCompatActivity {
         try {
             UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.bg_main), context);
             Constants.const_usersSignupDTO = null;
-            Constants.const_ConsumerSignupDTO = null;
+//            Constants.const_ConsumerSignupDTO = null;
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.bottomDialogTheme);
             View bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_registration, findViewById(R.id.bottom_view));
 
@@ -133,7 +133,7 @@ public class ScreenLogin extends AppCompatActivity {
                 Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", finalMobile);
                 queryNumber.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     new Thread(() -> {
-                        List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+                    List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
                         if (signupUserDTO.isEmpty()) {
                             stopAnimOnUIThread();
                             UtilityFunctions.orangeSnackBar(context, "Phone Number is not Registered!", Snackbar.LENGTH_LONG);

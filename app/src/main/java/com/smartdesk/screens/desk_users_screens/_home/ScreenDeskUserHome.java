@@ -1,33 +1,23 @@
 package com.smartdesk.screens.desk_users_screens._home;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -35,31 +25,18 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenDeskUserHomeBinding;
-import com.smartdesk.model.hire_worker.WorkerRequestDTO;
-import com.smartdesk.screens.admin._home.desk_user.PagerAdapterDeskUser;
 import com.smartdesk.screens.desk_users_screens._home.desk_user.PagerAdapterSmartDesk;
 import com.smartdesk.screens.desk_users_screens.charging.ScreenWirelessCharging;
 import com.smartdesk.screens.user_management.help.ScreenHelp;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
 import com.smartdesk.screens.user_management.notification.ScreenNotification;
-import com.smartdesk.screens.user_management.setting.ScreenMechanicSetting;
+import com.smartdesk.screens.user_management.setting.ScreenDeskUserSetting;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.location.FusedLocation;
-import com.smartdesk.model.fcm.Data;
-import com.smartdesk.model.notification.NotificationDTO;
-import com.smartdesk.screens.desk_users_screens.user_requests.ScreenDeskUserRequest;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import static java.util.ResourceBundle.clearCache;
 
@@ -94,8 +71,8 @@ public class ScreenDeskUserHome extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        binding.  name.setText(Constants.USER_NAME);
-        binding.phoneNumber.setText(Constants.USER_MOBILE.substring(0, 4) + "-" + Constants.USER_MOBILE.substring(4));
+        binding.name.setText(Constants.USER_NAME);
+        binding.phoneNumber.setText(UtilityFunctions.getPhoneNumberInFormat(Constants.USER_MOBILE));
         UtilityFunctions.picassoGetCircleImage(context, Constants.USER_PROFILE, binding.profilePic, binding.profileShimmer, R.drawable.side_profile_icon);
         getNotificationCount();
     }
@@ -119,7 +96,7 @@ public class ScreenDeskUserHome extends AppCompatActivity {
 
     private void initIDS() {
         binding.name.setText(Constants.USER_NAME);
-        binding.phoneNumber.setText(Constants.USER_MOBILE.substring(0, 4) + "-" + Constants.USER_MOBILE.substring(4));
+        binding.phoneNumber.setText(UtilityFunctions.getPhoneNumberInFormat(Constants.USER_MOBILE));
         UtilityFunctions.picassoGetCircleImage(context, Constants.USER_PROFILE, binding.profilePic, binding.profileShimmer, R.drawable.side_profile_icon);
     }
 
@@ -219,7 +196,7 @@ public class ScreenDeskUserHome extends AppCompatActivity {
     }
 
     public void settings(View view) {
-        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenMechanicSetting.class), false, 0);
+        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserSetting.class), false, 0);
     }
 
     public void logout(View view) {

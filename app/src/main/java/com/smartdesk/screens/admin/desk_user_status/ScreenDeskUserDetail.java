@@ -1,10 +1,5 @@
 package com.smartdesk.screens.admin.desk_user_status;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Color;
@@ -18,16 +13,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.smartdesk.R;
-import com.smartdesk.constants.Constants;
-import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.databinding.ScreenDeskUserDetailBinding;
-import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.utility.library.WorkaroundMapFragment;
-import com.smartdesk.model.fcm.Data;
-import com.smartdesk.model.notification.NotificationDTO;
-import com.smartdesk.model.signup.SignupUserDTO;
-import com.smartdesk.utility.memory.MemoryCache;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,6 +27,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.smartdesk.R;
+import com.smartdesk.constants.Constants;
+import com.smartdesk.constants.FirebaseConstants;
+import com.smartdesk.databinding.ScreenUserDetailBinding;
+import com.smartdesk.model.fcm.Data;
+import com.smartdesk.model.notification.NotificationDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
+import com.smartdesk.utility.UtilityFunctions;
+import com.smartdesk.utility.library.WorkaroundMapFragment;
+import com.smartdesk.utility.memory.MemoryCache;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -46,7 +46,7 @@ import static java.util.ResourceBundle.clearCache;
 
 public class ScreenDeskUserDetail extends AppCompatActivity {
 
-    ScreenDeskUserDetailBinding binding;
+    ScreenUserDetailBinding binding;
     private Activity context;
     public static SignupUserDTO deskUserDetailsScreenDTO;
 
@@ -64,7 +64,7 @@ public class ScreenDeskUserDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ScreenDeskUserDetailBinding.inflate(getLayoutInflater());
+        binding = ScreenUserDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         context = this;
 
@@ -289,13 +289,10 @@ public class ScreenDeskUserDetail extends AppCompatActivity {
         }
     }
 
-    public void moveToMechanicLocation(View view) {
+    public void moveToUserLocation(View view) {
         LatLng latLng = new LatLng(deskUserDetailsScreenDTO.getWorkerLat(), deskUserDetailsScreenDTO.getWorkerLng());
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(
                 latLng, Constants.cameraZoomInMap);
         mMap.animateCamera(location);
-    }
-
-    public void moveToShopLocation(View view) {
     }
 }

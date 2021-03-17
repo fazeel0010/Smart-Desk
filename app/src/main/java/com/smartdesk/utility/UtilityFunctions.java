@@ -226,7 +226,7 @@ public class UtilityFunctions {
     public static void showNotification(Context context, int notificationID, String title, String body, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         System.out.println("IN SHOW NOTIFICATION");
-        String channelId = Constants.SmartDesk+"-01";
+        String channelId = Constants.SmartDesk + "-01";
         String channelName = Constants.SmartDesk;
         int importance = NotificationManager.IMPORTANCE_HIGH;
 
@@ -330,7 +330,7 @@ public class UtilityFunctions {
                 // We are mentioning that the job is periodic.
                 .setRecurring(true)
                 // Run between 30 - 60 seconds from now.
-                .setTrigger(Trigger.executionWindow(60, 60+30))
+                .setTrigger(Trigger.executionWindow(60, 60 + 30))
                 // retry with exponential backoff
                 .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
                 //.setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
@@ -348,7 +348,7 @@ public class UtilityFunctions {
                 //call this service when the criteria are met.
 //                .setService(NotificationJob.class)
                 //unique id of the task
-                .setTag(Constants.SmartDesk +"TaskNotification")
+                .setTag(Constants.SmartDesk + "TaskNotification")
                 //don't overwrite an existing job with the same tag
                 .setReplaceCurrent(true)
                 // We are mentioning that the job is periodic.
@@ -533,6 +533,28 @@ public class UtilityFunctions {
             imageView.setImageDrawable(ContextCompat.getDrawable(activity, placeHolder));
             shimmerRemove(shimmer);
         }
+    }
+
+    public static void picassoGetCircleImage(Activity activity, int url, CircleImageView
+            imageView, ShimmerFrameLayout shimmer, int placeHolder) {
+
+        Picasso.get().load(url)
+                .resize(150, 150)
+                .placeholder(placeHolder)
+                .error(placeHolder)
+                .centerCrop()
+                .into(imageView, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        shimmerRemove(shimmer);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        shimmerRemove(shimmer);
+                    }
+
+                });
     }
 
     public static void picassoGetCircleImage(Activity activity, String url, ImageView
@@ -773,11 +795,13 @@ public class UtilityFunctions {
                     Uri downloadUri = task.getResult();
                     progressDialog.dismiss();
                     if (Constants.const_usersSignupDTO != null) {
-                       if (postion == 2)
-                           Constants.const_usersSignupDTO.setProfilePicture(downloadUri.toString());
-                    } else if (Constants.const_ConsumerSignupDTO != null) {
-                        Constants.const_ConsumerSignupDTO.setProfilePicture(downloadUri.toString());
-                    } else {
+                        if (postion == 2)
+                            Constants.const_usersSignupDTO.setProfilePicture(downloadUri.toString());
+                    }
+//                    else if (Constants.const_ConsumerSignupDTO != null) {
+//                        Constants.const_ConsumerSignupDTO.setProfilePicture(downloadUri.toString());
+//                    }
+                    else {
                         FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID)
                                 .update("profilePicture", downloadUri.toString());
                     }
@@ -993,24 +1017,17 @@ public class UtilityFunctions {
         return number.substring(0, 2) + "-" + number.substring(2);
     }
 
-    public static String getCnicInFormat(String number) {
-        return number.substring(0, 5) + "-" + number.substring(5, 12) + "-" + number.substring(12);
+    public static String getDeskID(String docID) {
+        return "Desk-" + docID.substring(docID.length() - 5, docID.length());
     }
 
-    public static String getCnicInFormatHide(String number) {
-        return number.substring(0, 5) + "-⁕⁕⁕⁕⁕⁕⁕" + "-" + number.substring(12);
+
+    public static String getDeskRegDate(String date) {
+        return "Reg. Date: " + date.split("at")[0];
     }
 
     public static String getDistanceInFormat(Double number) {
         DecimalFormat df = new DecimalFormat("0.00");
         return df.format(number) + " Km away";
-    }
-
-    public static void openCallingScreen(Activity activity, String number) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:" + number));
-            activity.startActivity(intent);
-        }, 0);
     }
 }

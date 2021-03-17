@@ -2,40 +2,24 @@ package com.smartdesk.screens.admin.manager_status;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.smartdesk.R;
-import com.smartdesk.constants.Constants;
-import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.databinding.ScreenAdminHomeBinding;
-import com.smartdesk.databinding.ScreenManagerBinding;
-import com.smartdesk.screens.admin._home.desk_user.PagerAdapterDeskUser;
-import com.smartdesk.screens.admin.desk_user_status.ScreenBlockedDeskUser;
-import com.smartdesk.screens.admin.information.ScreenInformation;
-import com.smartdesk.screens.user_management.login.ScreenLogin;
-import com.smartdesk.screens.user_management.notification.ScreenNotification;
-import com.smartdesk.screens.user_management.setting.ScreenAdminSetting;
+import com.smartdesk.databinding.ScreenAdminManagerBinding;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.memory.MemoryCache;
 
-public class ScreenManager extends AppCompatActivity {
+public class ScreenAdminManager extends AppCompatActivity {
 
-    ScreenManagerBinding binding;
+    ScreenAdminManagerBinding binding;
     Activity context;
 
     @Override
@@ -48,7 +32,7 @@ public class ScreenManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ScreenManagerBinding.inflate(getLayoutInflater());
+        binding = ScreenAdminManagerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         context = this;
         actionBar("Manager Requests");

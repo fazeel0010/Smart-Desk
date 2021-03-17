@@ -1,6 +1,5 @@
-package com.smartdesk.screens.admin.manager_status;
+package com.smartdesk.screens.manager_screens._home.desk_user;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,27 +9,27 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail;
+import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
+import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
 import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.utility.memory.MemoryCache;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -41,66 +40,38 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 
-public class ScreenBlockedManager extends AppCompatActivity {
+public class FragmentDeskBookedView extends Fragment {
 
+    private View view;
     private Activity context;
+    boolean isStop;
 
     //RecyclerView Variables
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView recyclerView;
-    ScreenBlockedManager.Adapter adapter;
+    Adapter adapter;
     List<SignupUserDTO> approvedMechanicDTOList = new ArrayList<>();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.gc();
-        new MemoryCache().clear();
+    public FragmentDeskBookedView() {
     }
 
+    public FragmentDeskBookedView(Activity context) {
+        this.context = context;
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_blocked_users);
-        context = this;
-        initLoadingBarItems();
-        actionBar("Blocked Manager");
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_user_approved, container, false);
         initIds();
+        ((TextView)view.findViewById(R.id.listEmptyText)).setText("No Booked Desks Found");
         setRecyclerView();
-    }
-
-    public void actionBar(String actionTitle) {
-        Toolbar a = findViewById(R.id.actionbarInclude).findViewById(R.id.toolbar);
-        setSupportActionBar(a);
-        ((TextView) findViewById(R.id.actionbarInclude).findViewById(R.id.actionTitleBar)).setText(actionTitle);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.icon_chevron_left_blue));
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         showDataOnList(false);
+        return view;
     }
 
     private void initIds() {
-        ((TextView) findViewById(R.id.listEmptyText)).setText("No blocked managers found!");
-        swipeRefreshLayout = findViewById(R.id.swipeToRefresh);
+        swipeRefreshLayout = view.findViewById(R.id.swipeToRefresh);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.SmartDesk_Editext_red), ContextCompat.getColor(context, R.color.SmartDesk_Blue));
         swipeRefreshLayout.setOnRefreshListener(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> showDataOnList(true), 0));
     }
@@ -110,53 +81,78 @@ public class ScreenBlockedManager extends AppCompatActivity {
     }
 
     public void setRecyclerView() {
-        new Handler(Looper.getMainLooper()).postDelayed((Runnable) () -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             adapter = new Adapter(approvedMechanicDTOList);
-            recyclerView = UtilityFunctions.setRecyclerView((RecyclerView) findViewById(R.id.recycler_view), context);
+            recyclerView = UtilityFunctions.setRecyclerView((RecyclerView) view.findViewById(R.id.recycler_view), context);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }, 0);
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isStop) {
+            showDataOnList(false);
+            isStop = false;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        isStop = true;
+    }
+
     public void showDataOnList(Boolean isSwipe) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isSwipe)
-                startAnim();
-            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.managerRole).whereEqualTo("userStatus", Constants.blockedStatus).get().
+                ((ScreenManagerHome) context).startAnim();
+            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.deskUserRole).whereEqualTo("userStatus", Constants.activeStatus).get().
                     addOnSuccessListener(task -> {
                         onItemsLoadComplete();
                         approvedMechanicDTOList.clear();
                         if (!isSwipe)
-                            stopAnim();
-                        if (task.isEmpty()) {
-                            findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+                            ((ScreenManagerHome) context).stopAnim();
+                        if (!task.isEmpty()) {
                             List<SignupUserDTO> signupUserDTOSList = task.toObjects(SignupUserDTO.class);
-                            if (signupUserDTOSList.size() > 0) {
-                                for (int i = 0; i < task.size(); i++)
-                                    signupUserDTOSList.get(i).setLocalDocuementID(task.getDocuments().get(i).getId());
-                                findViewById(R.id.listEmptyText).setVisibility(View.GONE);
-                                approvedMechanicDTOList.addAll(signupUserDTOSList);
+                            if (signupUserDTOSList.isEmpty()) {
+                                view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                 adapter.notifyDataSetChanged();
                             } else {
-                                findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                                view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+
+//                                if (signupUserDTOSList.size() > 0) {
+//                                    for (int i = 0; i < task.size(); i++)
+//                                        signupUserDTOSList.get(i).setLocalDocuementID(task.getDocuments().get(i).getId());
+//                                    view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+//                                    approvedMechanicDTOList.clear();
+//                                    approvedMechanicDTOList.addAll(signupUserDTOSList);
+//                                    adapter.notifyDataSetChanged();
+//                                } else {
+                                view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                 adapter.notifyDataSetChanged();
+//                                }
                             }
+                        } else {
+                            view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                            adapter.notifyDataSetChanged();
+//                                redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                         }
                         adapter.notifyDataSetChanged();
                     }).addOnFailureListener(e -> {
-                onItemsLoadComplete();
                 approvedMechanicDTOList.clear();
+                onItemsLoadComplete();
                 if (!isSwipe)
-                    stopAnim();
+                    ((ScreenManagerHome) context).stopAnim();
+                UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                 adapter.notifyDataSetChanged();
             });
         }, 0);
     }
 
-    public class Adapter extends RecyclerView.Adapter<ScreenBlockedManager.Adapter.ViewHolder> {
+    public class Adapter extends RecyclerView.Adapter<FragmentDeskBookedView.Adapter.ViewHolder> {
 
         List<SignupUserDTO> mechanicsList;
 
@@ -166,10 +162,11 @@ public class ScreenBlockedManager extends AppCompatActivity {
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public FragmentDeskBookedView.Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.rv_item_approved_users, parent, false);
-            return new ViewHolder(view);
+            view.findViewById(R.id.cardView).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.whatsapp_green_dark));
+            return new FragmentDeskBookedView.Adapter.ViewHolder(view);
         }
 
         @Override
@@ -179,7 +176,7 @@ public class ScreenBlockedManager extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull FragmentDeskBookedView.Adapter.ViewHolder holder, final int position) {
             final Context innerContext = holder.itemView.getContext();
             Date registrationDate = mechanicsList.get(position).getRegistrationDate();
             String timeAgo = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
@@ -190,8 +187,11 @@ public class ScreenBlockedManager extends AppCompatActivity {
             picassoGetCircleImage(context, mechanicsList.get(position).getProfilePicture(), holder.profilePic, holder.profile_shimmer, R.drawable.side_profile_icon);
 
             holder.itemCardview.setOnClickListener(v -> {
-                ScreenDeskUserDetail.deskUserDetailsScreenDTO = mechanicsList.get(position);
-                UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenDeskUserDetail.class), false, 0);
+                try {
+                    ScreenDeskUserDetail.deskUserDetailsScreenDTO = mechanicsList.get(position);
+                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenDeskUserDetail.class), false, 0);
+                } catch (Exception ex) {
+                }
             });
         }
 
@@ -219,33 +219,5 @@ public class ScreenBlockedManager extends AppCompatActivity {
                 timeAgo = view.findViewById(R.id.timeAgo);
             }
         }
-    }
-
-    //======================================== Show Loading bar ==============================================
-    private LinearLayout load;
-    private CoordinatorLayout bg_main;
-    private ObjectAnimator anim;
-    private ImageView progressBar;
-    private Boolean isLoad;
-
-    private void initLoadingBarItems() {
-        load = findViewById(R.id.loading_view);
-        bg_main = findViewById(R.id.bg_main);
-        progressBar = findViewById(R.id.loading_image);
-    }
-
-    public void startAnim() {
-        isLoad = true;
-        load.setVisibility(View.VISIBLE);
-        bg_main.setAlpha((float) 0.2);
-        anim = UtilityFunctions.loadingAnim(this, progressBar);
-        load.setOnTouchListener((v, event) -> isLoad);
-    }
-
-    public void stopAnim() {
-        anim.end();
-        load.setVisibility(View.GONE);
-        bg_main.setAlpha((float) 1);
-        isLoad = false;
     }
 }

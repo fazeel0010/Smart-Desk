@@ -14,8 +14,10 @@
     <string name="userAprroved">Approved</string>
 
 
-    <string name="deskAvailable">Available</string>
-    <string name="deskBooked">Booked</string>
+    <string name="deskAvailable">All Desks</string>
+    <string name="deskBooked">Desk Booked By You</string>
+
+    <string name="managerBooked">Desks Booked By Users</string>
 
     <string name="map_view">Map View</string>
     <string name="list_view">List View</string>

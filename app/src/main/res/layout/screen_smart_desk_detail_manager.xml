@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tumblr_logo_dark"
-    tools:context="com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail">
+    tools:context="com.smartdesk.screens.manager_screens._home.desk_user.ScreenSmartDeskDetailManager">
 
     <include
         android:id="@+id/actionbarInclude"
@@ -64,21 +64,13 @@
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
-                                <com.facebook.shimmer.ShimmerFrameLayout
-                                    android:id="@+id/profile_shimmer"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="8dp">
-
-                                    <de.hdodenhof.circleimageview.CircleImageView
-                                        android:id="@+id/profilePic"
-                                        android:layout_width="60dp"
-                                        android:layout_height="60dp"
-                                        android:onClick="viewProfilePic"
-                                        android:src="@drawable/side_profile_icon"
-                                        app:civ_border_color="@color/white"
-                                        app:civ_border_width="1dp" />
-                                </com.facebook.shimmer.ShimmerFrameLayout>
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/profilePic"
+                                    android:layout_width="60dp"
+                                    android:layout_height="60dp"
+                                    android:src="@drawable/z_png_logo_for_splash_screen"
+                                    app:civ_border_color="@color/white"
+                                    app:civ_border_width="1dp" />
 
                                 <LinearLayout
                                     android:layout_width="0dp"
@@ -112,23 +104,27 @@
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
                                         android:layout_marginTop="3dp"
-                                        android:gravity="center">
+                                        android:gravity="center"
+                                        android:orientation="horizontal">
 
                                         <ImageView
                                             android:layout_width="16dp"
                                             android:layout_height="match_parent"
                                             android:layout_gravity="center"
                                             android:adjustViewBounds="true"
-                                            android:src="@drawable/icon_mobile"
+                                            android:src="@drawable/icon_desk"
                                             app:tint="@color/forground2" />
 
                                         <TextView
-                                            android:id="@+id/phoneNumber"
-                                            android:layout_width="match_parent"
+                                            android:id="@+id/deskID"
+                                            android:layout_width="0dp"
                                             android:layout_height="match_parent"
-                                            android:text="0335-2426258"
+                                            android:layout_marginStart="4dp"
+                                            android:layout_weight="1"
+                                            android:text="DESK-1234"
                                             android:textColor="@color/forground2"
                                             android:textSize="14sp" />
+
                                     </LinearLayout>
                                 </LinearLayout>
                             </LinearLayout>
@@ -141,40 +137,7 @@
                             android:layout_marginTop="10dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            android:weightSum="6">
-                            
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_weight="3"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_marginTop="2dp"
-                                    android:adjustViewBounds="true"
-                                    android:src="@drawable/icon_time_simple"
-                                    app:tint="@color/forground2" />
-
-                                <TextView
-                                    android:id="@+id/gender"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="3dp"
-                                    android:gravity="center"
-                                    android:text="Male"
-                                    android:textColor="@color/forground2"
-                                    android:textSize="14sp" />
-
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/forground2" />
+                            android:weightSum="1">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -221,7 +184,7 @@
                                 android:id="@+id/bgStatus"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@color/whatsapp_green_dark"
+                                android:background="@color/SmartDesk_Orange"
                                 android:padding="3dp">
 
                                 <LinearLayout
@@ -236,7 +199,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_gravity="center"
                                         android:adjustViewBounds="true"
-                                        android:src="@drawable/check_mark"
+                                        android:src="@drawable/icon_block"
                                         app:tint="@color/white" />
                                 </LinearLayout>
 
@@ -246,11 +209,43 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
                                     android:gravity="start"
-                                    android:text="Account is active"
+                                    android:text="Desk not reserve yet"
                                     android:textColor="@color/white"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:clickable="true"
+                    android:elevation="10dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    app:cardBackgroundColor="@color/cardViewColor"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/outline_bottom_border"
+                            android:text="Desk Booking Details"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -278,7 +273,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/outline_bottom_border"
-                            android:text="User location in map"
+                            android:text="Desk location in map"
                             android:textColor="@color/white"
                             android:textSize="14sp" />
 
@@ -319,7 +314,7 @@
                                         android:layout_height="match_parent"
                                         android:layout_gravity="center"
                                         android:adjustViewBounds="true"
-                                        android:src="@drawable/icon_users" />
+                                        android:src="@drawable/icon_desk" />
                                 </LinearLayout>
 
                                 <TextView
@@ -328,7 +323,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
                                     android:gravity="start"
-                                    android:text="Move to User location"
+                                    android:text="Move to Desk location"
                                     android:textColor="@color/white"
                                     android:textSize="16sp" />
                             </LinearLayout>
@@ -345,40 +340,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:weightSum="12">
+        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/approved"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height"
-            android:layout_weight="4"
-            android:background="@drawable/ripple_linear_white"
-            android:backgroundTint="@color/whatsapp_green_dark"
-            android:drawableStart="@drawable/icon_approve_24"
-            android:onClick="Approve"
-            android:paddingStart="4dp"
-            android:text="Approve"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/blocked"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height"
-            android:layout_weight="4"
-            android:background="@drawable/ripple_linear_white"
-            android:backgroundTint="@color/SmartDesk_Orange"
-            android:drawableStart="@drawable/icon_block"
-            android:onClick="block"
-            android:paddingStart="4dp"
-            android:text="Block"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
 
         <Button
             android:layout_width="0dp"
@@ -388,7 +351,8 @@
             android:backgroundTint="@color/red"
             android:drawableStart="@drawable/icon_delete"
             android:onClick="delete"
-            android:paddingStart="4dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:text="Delete"
             android:textAllCaps="false"
             android:textColor="@color/white"

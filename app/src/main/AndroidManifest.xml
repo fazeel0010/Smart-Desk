@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
+
+
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
@@ -27,7 +29,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="com.smartdesk.screens.admin.information.ScreenInformation"></activity>
+        <activity android:name="com.smartdesk.screens.admin.information.ScreenInformation"
+            android:screenOrientation="portrait"></activity>
         <!-- xxxxxxxxxxxxxxxxxxxxxxxACTIVITY STARTxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
         <!-- ============================= Splash Screens ==================================== -->
         <activity
@@ -52,7 +55,23 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <activity
+            android:name="com.smartdesk.screens.manager_screens.add_desk.ScreenAddNewDesk"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <activity
             android:name="com.smartdesk.screens.manager_screens.sign_up.ScreenMangerSignup"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+
+        <activity
+            android:name="com.smartdesk.screens.manager_screens._home.desk_user.ScreenSmartDeskDetailManager"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <activity
+            android:name="com.smartdesk.screens.desk_users_screens._home.desk_user.ScreenSmartDeskDetailUser"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
@@ -93,7 +112,7 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
-            android:name="com.smartdesk.screens.admin.manager_status.ScreenManager"
+            android:name="com.smartdesk.screens.admin.manager_status.ScreenAdminManager"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
 
@@ -109,7 +128,9 @@
         <activity
             android:name="com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" /> <!-- ============================= Consumer Screens ==================================== -->
+            android:windowSoftInputMode="stateHidden" />
+
+        <!-- ============================= Consumer Screens ==================================== -->
 
 
         <activity
@@ -122,11 +143,11 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
-            android:name="com.smartdesk.screens.user_management.setting.ScreenMechanicSetting"
+            android:name="com.smartdesk.screens.user_management.setting.ScreenDeskUserSetting"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
-            android:name="com.smartdesk.screens.user_management.setting.ScreenConsumerSetting"
+            android:name="com.smartdesk.screens.user_management.setting.ScreenManagerSetting"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
@@ -150,19 +171,9 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
 
-        <activity
-            android:name="com.smartdesk.screens.consumer.tutorials.ScreenTutorials"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <!-- ============================= Workers Map Screen ============================================ -->
-        <activity
-            android:name="com.smartdesk.screens.consumer.workers_in_map.ScreenWorkersMap"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
 
         <!-- xxxxxxxxxxxxxxxxxxxxxxxACTIVITY ENDxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+
 
         <!-- ============================= Image save path ============================================ -->
         <provider

@@ -21,7 +21,7 @@ import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenAdminHomeBinding;
 import com.smartdesk.screens.admin._home.desk_user.PagerAdapterDeskUser;
 import com.smartdesk.screens.admin.manager_status.ScreenBlockedManager;
-import com.smartdesk.screens.admin.manager_status.ScreenManager;
+import com.smartdesk.screens.admin.manager_status.ScreenAdminManager;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
 import com.smartdesk.screens.user_management.notification.ScreenNotification;
 import com.smartdesk.utility.UtilityFunctions;
@@ -62,7 +62,7 @@ public class ScreenAdminHome extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         binding.name.setText(Constants.USER_NAME);
-        binding.phoneNumber.setText(Constants.USER_MOBILE.substring(0, 4) + "-" + Constants.USER_MOBILE.substring(4));
+        binding.phoneNumber.setText(UtilityFunctions.getPhoneNumberInFormat(Constants.USER_MOBILE));
         UtilityFunctions.picassoGetCircleImage(context, Constants.USER_PROFILE, binding.profilePic, binding.profileShimmer, R.drawable.side_profile_icon);
         getNotificationCount();
     }
@@ -178,7 +178,7 @@ public class ScreenAdminHome extends AppCompatActivity {
     }
 
     public void ManagerRequests(View view) {
-        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManager.class), false, 0);
+        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminManager.class), false, 0);
     }
     //======================================== Show Loading bar ==============================================
 }

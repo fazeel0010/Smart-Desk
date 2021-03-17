@@ -211,7 +211,7 @@ public class ScreenAdminSetting extends AppCompatActivity implements TextView.On
 
             title.setText(const_SettingData.getWorkerName());
             name.setText(const_SettingData.getWorkerName());
-            mobileNumber.setText(const_SettingData.getWorkerPhone());
+            mobileNumber.setText(UtilityFunctions.getPhoneNumberInFormat(const_SettingData.getWorkerPhone()));
             gender.setText(const_SettingData.getWorkerGender());
             ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
 

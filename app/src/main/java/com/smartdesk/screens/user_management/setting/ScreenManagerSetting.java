@@ -19,7 +19,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,11 +42,11 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.constants.PermisionCode;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.user_management.change_password.ScreenChangePassword;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.CustomEditext;
 import com.smartdesk.utility.memory.MemoryCache;
-import com.smartdesk.model.signup.SignupUserDTO;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -55,7 +54,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
-import com.santalu.maskedittext.MaskEditText;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,24 +68,22 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.smartdesk.utility.UtilityFunctions.noRoundImageCorner;
 import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 
-public class ScreenMechanicSetting extends AppCompatActivity implements TextView.OnEditorActionListener {
+public class ScreenManagerSetting extends AppCompatActivity {
 
     private Activity context;
-    private SignupUserDTO const_SettingData;
-
     MemoryCache memoryCache = new MemoryCache();
 
     private TextView title;
-    private TextView name, mobileNumber, dob, gender;
+    private TextView name, mobileNumber,dob, gender;
     private TextView address;
     private CircleImageView profilePic;
 
     private String isProfileUrl = "";
-
     private int cameraReult;
 
-    private DatePickerDialog mDateListener;
     private boolean isOkay;
+
+    private SignupUserDTO const_SettingData;
 
     @Override
     protected void onDestroy() {
@@ -99,7 +95,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.screen_mechanic_setting);
+        setContentView(R.layout.screen_manager_setting);
         context = this;
         actionBar("Settings");
         initLoadingBarItems();
@@ -131,11 +127,10 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     private void initIds() {
         title = findViewById(R.id.title);
         name = findViewById(R.id.name);
-        name.setOnEditorActionListener(this);
         mobileNumber = findViewById(R.id.phoneNumber);
-        dob = findViewById(R.id.dob);
         gender = findViewById(R.id.gender);
         address = findViewById(R.id.address);
+        dob = findViewById(R.id.dob);
 
         profilePic = findViewById(R.id.profilePic);
     }
@@ -145,6 +140,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         setSupportActionBar(a);
         ((TextView) findViewById(R.id.actionbarInclude).findViewById(R.id.actionTitleBar)).setText(actionTitle);
         assert getSupportActionBar() != null;
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -160,23 +156,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (bottomView != null)
-            UtilityFunctions.removeFocusFromEditexts(bottomView.findViewById(R.id.parent), context);
-        else
-            UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.parent), context);
         finish();
-    }
-
-    private String getDataFromMaskText(MaskEditText editText, String errorMSG, int minimumLength, TextView viewById) {
-        String text = "";
-        try {
-            text = UtilityFunctions.getStringFromMaskWithLengthLimit(editText, minimumLength);
-        } catch (NullPointerException ex) {
-            viewById.setText(errorMSG);
-            viewById.setVisibility(View.VISIBLE);
-            isOkay = false;
-        }
-        return text;
     }
 
     private String getDataFromEditext(EditText editText, String errorMSG, int minimumLength, TextView viewById) {
@@ -184,8 +164,8 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         try {
             text = UtilityFunctions.getStringFromEditTextWithLengthLimit(editText, minimumLength);
         } catch (NullPointerException ex) {
-            viewById.setText(errorMSG);
-            viewById.setVisibility(View.VISIBLE);
+            editText.setError(errorMSG);
+            viewById.setVisibility(View.VISIBLE);;
             isOkay = false;
         }
         return text;
@@ -203,7 +183,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
                         openCamera(imageName);
                 }
             } else {
-                showImageOn(isProfileUrl, "Profile Image", false);
+                showImageOn(isProfileUrl, "Profile Image");
             }
         }, 0);
     }
@@ -213,79 +193,36 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         UtilityFunctions.sendIntentNormal(context, new Intent(this, ScreenChangePassword.class), false, 0);
     }
 
-    public void dob(View view) {
-        final Calendar c = Calendar.getInstance();
-        String date = dob.getText().toString();
-        String date2[] = date.split("/");
-        mDateListener = new DatePickerDialog(this,R.style.dateTheme, (view1, year, month, dayOfMonth) -> {
-            c.set(year, month, dayOfMonth);
-            String date1 = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
-            dob.setText(date1);
-
-            startAnim();
-            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).
-                    update("workerDob", date1)
-                    .addOnSuccessListener(aVoid -> {
-                        stopAnim();
-                        getData();
-                    })
-                    .addOnFailureListener(e -> {
-                        stopAnim();
-                    });
-        }, Integer.valueOf(date2[2]), Integer.valueOf(date2[1]) - 1, Integer.valueOf(date2[0]));
-        mDateListener.getDatePicker().setMaxDate(System.currentTimeMillis());
-        mDateListener.show();
-    }
-
     public void setData() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (const_SettingData != null) {
+            Constants.USER_NAME = const_SettingData.getWorkerName();
+            Constants.USER_MOBILE = const_SettingData.getWorkerPhone();
+            Constants.USER_PROFILE = const_SettingData.getProfilePicture();
 
-                Constants.USER_NAME = const_SettingData.getWorkerName();
-                Constants.USER_MOBILE = const_SettingData.getWorkerPhone();
-                Constants.USER_PROFILE = const_SettingData.getProfilePicture();
+            title.setText(const_SettingData.getWorkerName());
+            name.setText(const_SettingData.getWorkerName());
+            mobileNumber.setText(UtilityFunctions.getPhoneNumberInFormat(const_SettingData.getWorkerPhone()));
+            gender.setText(const_SettingData.getWorkerGender());
+            dob.setText(const_SettingData.getWorkerDob());
+            address.setText(const_SettingData.getWorkerLocation());
+            ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
 
-                isProfileUrl = const_SettingData.getProfilePicture();
-
-                title.setText(const_SettingData.getWorkerName());
-                name.setText(const_SettingData.getWorkerName());
-                mobileNumber.setText(const_SettingData.getWorkerPhone());
-                gender.setText(const_SettingData.getWorkerGender());
-                dob.setText(const_SettingData.getWorkerDob());
-                address.setText(const_SettingData.getWorkerLocation());
-                ((TextView) findViewById(R.id.email)).setText(const_SettingData.getWorkerEmail());
-
-                try {
-                    if (const_SettingData.getProfilePicture() != null)
-                        picassoGetCircleImage(context,const_SettingData.getProfilePicture(), profilePic, findViewById(R.id.profile_shimmer), R.drawable.side_profile_icon);
-                    else
-                        UtilityFunctions.disableShimmer(findViewById(R.id.profile_shimmer));
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+            try {
+                isProfileUrl =const_SettingData.getProfilePicture();
+                if (const_SettingData.getProfilePicture() != null)
+                    UtilityFunctions.picassoGetCircleImage(context,const_SettingData.getProfilePicture(), profilePic, findViewById(R.id.profile_shimmer), R.drawable.side_profile_icon);
+                else
+                    UtilityFunctions.disableShimmer(findViewById(R.id.profile_shimmer));
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             clearCache();
         }, 0);
     }
 
-    public void updateBackCnicPictureAPI() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startAnim();
-            startAnim();
-        }, 0);
-    }
-
-    public void updateFrontCnicPictureAPI() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startAnim();
-            startAnim();
-        }, 0);
-    }
-
     public void updateProfilePictureAPI() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startAnim();
-            startAnim();
+
         }, 0);
     }
 
@@ -321,7 +258,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     //Cninc Variables
     private File imageFile;
     private String imageName;
-    private Boolean isfrontCnic = false, isbackCnic = false, isProfilePic;
+    private Boolean isProfilePic;
     private Boolean isCameraOpen = false;
 
     public boolean askForPermission() {
@@ -455,33 +392,31 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
             try {
                 File f = new File(imageFile.getPath());
                 Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-                File file = UtilityFunctions.BitmapToFile(ScreenMechanicSetting.this, f, b);
+                File file = UtilityFunctions.BitmapToFile(ScreenManagerSetting.this, f, b);
+
                 if (cameraReult == 1) {
                     Glide.with(this).load(b).apply(new RequestOptions().fitCenter().diskCacheStrategy(DiskCacheStrategy.ALL)
                             .transform(new RoundedCorners(12))).into(profilePic);
                     UtilityFunctions.uploadImage((Activity) context, Uri.fromFile(file), imageName, const_SettingData.getWorkerPhone(), 2);
                 }
             } catch (FileNotFoundException e) {
-                UtilityFunctions.orangeSnackBar(ScreenMechanicSetting.this, "Photo file can't be created, please try again", Snackbar.LENGTH_SHORT);
+                UtilityFunctions.orangeSnackBar(ScreenManagerSetting.this, "Photo file can't be created, please try again", Snackbar.LENGTH_SHORT);
                 e.printStackTrace();
             }
         }
     }
 
-    public void showImageOn(String alertDialogImageURL, String name, boolean isCnic) {
+    public void showImageOn(String alertDialogImageURL, String name) {
         try {
             clearCache();
-            System.out.println(alertDialogImageURL);
-            final AlertDialog confirmationAlert = new AlertDialog.Builder(ScreenMechanicSetting.this).create();
-            final View dialogView = ScreenMechanicSetting.this.getLayoutInflater().inflate(R.layout.alert_dialog_big_image, null);
+            final AlertDialog confirmationAlert = new AlertDialog.Builder(ScreenManagerSetting.this).create();
+            final View dialogView = ScreenManagerSetting.this.getLayoutInflater().inflate(R.layout.alert_dialog_big_image, null);
             ImageView img = dialogView.findViewById(R.id.imagePreview);
             TextView nameText = dialogView.findViewById(R.id.name);
             nameText.setText(name);
             ShimmerFrameLayout shimmer = dialogView.findViewById(R.id.shimmer);
             UtilityFunctions.noRoundImageCorner(this, img, alertDialogImageURL, shimmer);
-            if (isCnic)
-                dialogView.findViewById(R.id.retake).setVisibility(View.GONE);
-            ((Button) dialogView.findViewById(R.id.retake)).setText("Take New Profile Image");
+            ((Button)dialogView.findViewById(R.id.retake)).setText("Take New Profile Image");
             dialogView.findViewById(R.id.retake).setOnClickListener(v -> {
                 if (askForPermission()) {
                     if (!isCameraOpen)
@@ -510,7 +445,7 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         if (isProfileUrl == null || isProfileUrl.equals("")) {
             UtilityFunctions.orangeSnackBar(this, "please Upload Image First", Snackbar.LENGTH_SHORT);
         } else {
-            showImageOn(isProfileUrl, "Profile Image", false);
+            showImageOn(isProfileUrl, "Profile Image");
         }
     }
 
@@ -523,98 +458,32 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         spinnerArray.add(Constants.genderSelection);
         spinnerArray.add("Male");
         spinnerArray.add("Female");
-        openBottomViewSpinner("Change Gender", R.drawable.icon_gender, "Gender not Selected *", "workerGender", spinnerArray, Constants.genderSelection);
-    }
-
-    public void workPlaceName(View view) {
-        openBottomView("Change Workplace Name", R.drawable.icon_shop, InputType.TYPE_TEXT_VARIATION_PERSON_NAME, "Invalid Workplace Name", 3, "shopName", "Enter Your Workplace Name");
-    }
-
-    public void shopNumber(View view) {
-        openBottomViewMaskText("Change Workplace Number", R.drawable.icon_contact, InputType.TYPE_CLASS_NUMBER, "Number length should be 11", 12, "shopPhone", "Enter Your Workplace Number");
-    }
-
-    public void workingCategory(View view) {
-        List<String> spinnerArray = new ArrayList<>();
-        spinnerArray.add(Constants.workingCategorySelection);
-        for (String item : Constants.workingCategoryItems)
-            spinnerArray.add(item);
-        openBottomViewSpinner("Change Working Category", R.drawable.icon_working_category, "Working Category not Selected *", "workingCategory", spinnerArray, Constants.workingCategorySelection);
-    }
-
-    public void workPlaceCategory(View view) {
-        List<String> spinnerArray = new ArrayList<>();
-        spinnerArray.add(Constants.shopCategorySelection);
-        for (String item : Constants.shopCategoryItems)
-            spinnerArray.add(item);
-        openBottomViewSpinner("Change Workplace Category", R.drawable.icon_category, "Workplace Category not Selected *", "shopCategory", spinnerArray, Constants.shopCategorySelection);
+        openBottomViewSpinner("Change Gender",R.drawable.icon_gender,"Gender not Selected *","workerGender",spinnerArray, Constants.genderSelection);
     }
 
     public void openBottomView(String title, int icon, int inputType, String errorMsg, int minimumLength, String fieldName, String hint) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.bottomDialogTheme);
-        bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_editext, findViewById(R.id.bottom_view));
+        View bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_editext, findViewById(R.id.bottom_view));
         UtilityFunctions.setupUI(bottomView.findViewById(R.id.bottom_view), context);
         ((TextView) bottomView.findViewById(R.id.changeTitle)).setText(title);
         ((ImageView) bottomView.findViewById(R.id.iconImage)).setImageDrawable(ContextCompat.getDrawable(context, icon));
         CustomEditext CustomEditext = bottomView.findViewById(R.id.editext);
-//        CustomEditext.setOnEditorActionListener(this);
         CustomEditext.setInputType(inputType);
         CustomEditext.setHint(hint + " ⁕");
         bottomView.findViewById(R.id.save).setOnClickListener(v -> {
             isOkay = true;
             (bottomView.findViewById(R.id.spinnerError)).setVisibility(View.GONE);
+            ((TextView) bottomView.findViewById(R.id.spinnerError)).setText(errorMsg);
+
             UtilityFunctions.removeFocusFromEditexts(bottomView.findViewById(R.id.parent), context);
-            String data = getDataFromEditext(CustomEditext, errorMsg, minimumLength, (bottomView.findViewById(R.id.spinnerError)));
+            String data = getDataFromEditext(CustomEditext, errorMsg, minimumLength, bottomView.findViewById(R.id.spinnerError));
             if (!UtilityFunctions.isValidName(data)) {
                 isOkay = false;
-                ((TextView) bottomView.findViewById(R.id.spinnerError)).setText(errorMsg);
                 (bottomView.findViewById(R.id.spinnerError)).setVisibility(View.VISIBLE);
             }
             if (isOkay) {
                 startAnim();
                 bottomSheetDialog.dismiss();
-                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).
-                        update(fieldName, data)
-                        .addOnSuccessListener(aVoid -> {
-                            stopAnim();
-                            getData();
-                        })
-                        .addOnFailureListener(e -> {
-                            stopAnim();
-                        });
-            }
-        });
-        bottomSheetDialog.setContentView(bottomView);
-        bottomSheetDialog.show();
-    }
-
-    public void openBottomViewMaskText(String title, int icon, int inputType, String errorMsg, int minimumLength, String fieldName, String hint) {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.bottomDialogTheme);
-        bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_maskeditext, findViewById(R.id.bottom_view));
-        UtilityFunctions.setupUI(bottomView.findViewById(R.id.bottom_view), context);
-        ((ImageView) bottomView.findViewById(R.id.iconImage)).setImageDrawable(ContextCompat.getDrawable(context, icon));
-        ((TextView) bottomView.findViewById(R.id.changeTitle)).setText(title);
-        MaskEditText CustomEditext = bottomView.findViewById(R.id.editext);
-        CustomEditext.setInputType(inputType);
-        CustomEditext.setHint(hint + " ⁕");
-        bottomView.findViewById(R.id.save).setOnClickListener(v -> {
-            isOkay = true;
-            (bottomView.findViewById(R.id.spinnerError)).setVisibility(View.GONE);
-            UtilityFunctions.removeFocusFromEditexts(bottomView.findViewById(R.id.parent), context);
-            String data = getDataFromMaskText(CustomEditext, errorMsg, minimumLength, (bottomView.findViewById(R.id.spinnerError)));
-            try {
-                data = data.replaceAll("-", "");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            if (!data.startsWith("03") && !data.startsWith("0213")) {
-                ((TextView) bottomView.findViewById(R.id.spinnerError)).setText("Number should start from 03 or 0213");
-                (bottomView.findViewById(R.id.spinnerError)).setVisibility(View.VISIBLE);
-                isOkay = false;
-            }
-            if (isOkay) {
-                bottomSheetDialog.dismiss();
-                startAnim();
                 FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).
                         update(fieldName, data)
                         .addOnSuccessListener(aVoid -> {
@@ -631,9 +500,9 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
     }
 
     public void openBottomViewSpinner(String title, int icon, String errorMsg, String fieldName, List<String> list, String defaultText) {
-        isSpinnerSelected = false;
+        isSpinnerSelected=false;
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.bottomDialogTheme);
-        bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_spinner, findViewById(R.id.bottom_view));
+        View bottomView = LayoutInflater.from(this).inflate(R.layout.alert_bottom_spinner, findViewById(R.id.bottom_view));
         UtilityFunctions.setupUI(bottomView.findViewById(R.id.bottom_view), context);
         ((ImageView) bottomView.findViewById(R.id.iconImage)).setImageDrawable(ContextCompat.getDrawable(context, icon));
         ((TextView) bottomView.findViewById(R.id.changeTitle)).setText(title);
@@ -700,12 +569,29 @@ public class ScreenMechanicSetting extends AppCompatActivity implements TextView
         }
     }
 
+    private DatePickerDialog mDateListener;
 
-    View bottomView;
+    public void dob(View view) {
+        final Calendar c = Calendar.getInstance();
+        String date = dob.getText().toString();
+        String date2[] = date.split("/");
+        mDateListener = new DatePickerDialog(this, R.style.dateTheme,(view1, year, month, dayOfMonth) -> {
+            c.set(year, month, dayOfMonth);
+            String date1 = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
+            dob.setText(date1);
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-        return false;
+            startAnim();
+            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).
+                    update("workerDob", date1)
+                    .addOnSuccessListener(aVoid -> {
+                        stopAnim();
+                        getData();
+                    })
+                    .addOnFailureListener(e -> {
+                        stopAnim();
+                    });
+        }, Integer.valueOf(date2[2]), Integer.valueOf(date2[1]) - 1, Integer.valueOf(date2[0]));
+        mDateListener.getDatePicker().setMaxDate(System.currentTimeMillis());
+        mDateListener.show();
     }
 }

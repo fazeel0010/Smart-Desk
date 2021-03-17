@@ -18,51 +18,40 @@
             android:id="@+id/actionbarInclude"
             layout="@layout/action_bar_general" />
 
-        <ScrollView
+        <LinearLayout
+            android:id="@+id/bg_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/actionbarInclude">
+            android:layout_below="@id/actionbarInclude"
+            android:orientation="vertical">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_layout_background"
+                app:tabBackground="@drawable/tab_layout_selector"
+                app:tabIndicatorHeight="0dp"
+                app:tabPaddingEnd="16dp"
+                app:tabPaddingStart="16dp"
+                app:tabRippleColor="@null"
+                app:tabSelectedTextColor="@color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingBottom="15dp">
+                android:layout_below="@id/tabs"
+                android:layout_weight="10"
+                android:orientation="vertical">
 
-                <androidx.coordinatorlayout.widget.CoordinatorLayout
-                    android:id="@+id/bg_main"
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/view_pager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/actionbarInclude"
-                    android:background="@color/tumblr_logo_dark">
-
-                    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                        android:id="@+id/swipeToRefresh"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recycler_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scrollbars="vertical"
-                            android:visibility="visible"
-                            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-                    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-                    <TextView
-                        android:visibility="gone"
-                        android:id="@+id/listEmptyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text="No Consumer Request found!"
-                        android:textSize="20sp"
-                        android:textColor="@color/white" />
-                </androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    android:layout_height="0dp"
+                    android:layout_weight="9"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
             </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/loading_view"
@@ -195,6 +184,31 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical">
 
+                            <LinearLayout
+                                android:id="@+id/LL_nav_AddNewDesk"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:background="@drawable/ripple_linear_white"
+                                android:clickable="true"
+                                android:onClick="addNewDesk">
+
+                                <TextView
+                                    android:id="@+id/nav_newDesk"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:drawableStart="@drawable/icon_desk"
+                                    android:drawablePadding="8dp"
+                                    android:fontFamily="@font/segoeui"
+                                    android:paddingStart="16dp"
+                                    android:paddingTop="8dp"
+                                    android:paddingBottom="8dp"
+                                    android:text="Add New Desk"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/LL_nav_Lg"

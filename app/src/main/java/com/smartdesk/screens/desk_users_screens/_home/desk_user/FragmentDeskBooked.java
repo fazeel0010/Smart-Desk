@@ -200,7 +200,7 @@ public class FragmentDeskBooked extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView name, phoneNumber, city, timeAgo, cnic;
+            TextView name, phoneNumber, city, timeAgo;
             RatingBar ratingBar;
             CircleImageView profilePic;
             ShimmerFrameLayout profile_shimmer;
@@ -213,7 +213,6 @@ public class FragmentDeskBooked extends Fragment {
                 phoneNumber = view.findViewById(R.id.phoneNumber);
                 profile_shimmer = view.findViewById(R.id.profile_shimmer);
                 profilePic = view.findViewById(R.id.profilePic);
-                cnic = view.findViewById(R.id.cnic);
                 city = view.findViewById(R.id.address);
                 ratingBar = view.findViewById(R.id.rating);
                 timeAgo = view.findViewById(R.id.timeAgo);

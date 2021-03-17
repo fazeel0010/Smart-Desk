@@ -19,9 +19,6 @@ public class FirebaseConstants {
     public static String usersCollection = "Users";
     public static String smartDeskCollection = "SmartDesk";
     public static String notificationCollection = "Notification";
-    public static String paymentCollection = "Payment";
-    public static String chatListCollection = "ChatList";
-    public static String chatCollection = "Chat";
     public static String requestCollection = "Request";
 
     public static String adminDocumentID = "o8kiyQLOIbDokHTAh3jg";

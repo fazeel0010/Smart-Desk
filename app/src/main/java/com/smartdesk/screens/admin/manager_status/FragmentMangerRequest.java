@@ -108,13 +108,13 @@ public class FragmentMangerRequest extends Fragment {
     public void showDataOnList(Boolean isSwipe) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isSwipe)
-                ((ScreenManager) context).startAnim();
+                ((ScreenAdminManager) context).startAnim();
             FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.managerRole).whereEqualTo("userStatus", Constants.newAccountStatus).get()
                     .addOnSuccessListener(task -> {
                         onItemsLoadComplete();
                         approvedMechanicDTOList.clear();
                         if (!isSwipe)
-                            ((ScreenManager) context).stopAnim();
+                            ((ScreenAdminManager) context).stopAnim();
                         if (!task.isEmpty()) {
                             List<SignupUserDTO> signupUserDTOSList = task.toObjects(SignupUserDTO.class);
                             if (signupUserDTOSList.isEmpty()) {
@@ -143,7 +143,7 @@ public class FragmentMangerRequest extends Fragment {
                 onItemsLoadComplete();
                 approvedMechanicDTOList.clear();
                 if (!isSwipe)
-                    ((ScreenManager) context).stopAnim();
+                    ((ScreenAdminManager) context).stopAnim();
                 UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                 adapter.notifyDataSetChanged();
             });
@@ -198,7 +198,7 @@ public class FragmentMangerRequest extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView name, phoneNumber, city, timeAgo, cnic;
+            TextView name, phoneNumber, city, timeAgo;
             RatingBar ratingBar;
             CircleImageView profilePic;
             ShimmerFrameLayout profile_shimmer;
@@ -211,7 +211,6 @@ public class FragmentMangerRequest extends Fragment {
                 phoneNumber = view.findViewById(R.id.phoneNumber);
                 profile_shimmer = view.findViewById(R.id.profile_shimmer);
                 profilePic = view.findViewById(R.id.profilePic);
-                cnic = view.findViewById(R.id.cnic);
                 city = view.findViewById(R.id.address);
                 ratingBar = view.findViewById(R.id.rating);
                 timeAgo = view.findViewById(R.id.timeAgo);

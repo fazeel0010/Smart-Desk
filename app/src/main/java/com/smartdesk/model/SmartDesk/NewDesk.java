@@ -1,21 +1,81 @@
 package com.smartdesk.model.SmartDesk;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static com.smartdesk.constants.Constants.const_lat;
+import static com.smartdesk.constants.Constants.const_lng;
+
 public class NewDesk {
 
-    public String iD;
+    public String docID;
+
+    public String id;
     public String name;
-    public boolean wirelessCharging;
-    public boolean builtinSpeaker;
-    public boolean bluetoothConnection;
 
-    public boolean groupUser;
+    public String wirelessCharging;
+    public String builtinSpeaker;
+    public String bluetoothConnection;
+    public String groupUser;
 
-    public String getiD() {
-        return iD;
+    public Double deskLat;
+    public Double deskLng;
+
+    public List<String> bookDate;
+
+    @ServerTimestamp
+    public Date registrationDate;
+
+
+    public NewDesk(){
+        docID = "";
+        id = "";
+        name = "Smart Desk";
+        wirelessCharging = "";
+        builtinSpeaker = "";
+        bluetoothConnection = "";
+        groupUser = "";
+        bookDate = new ArrayList<>();
+        registrationDate = new Timestamp(new Date().getTime());
+        deskLat =const_lat;
+        deskLng =const_lng;
     }
 
-    public void setiD(String iD) {
-        this.iD = iD;
+
+    public Double getDeskLat() {
+        return deskLat;
+    }
+
+    public void setDeskLat(Double deskLat) {
+        this.deskLat = deskLat;
+    }
+
+    public Double getDeskLng() {
+        return deskLng;
+    }
+
+    public void setDeskLng(Double deskLng) {
+        this.deskLng = deskLng;
+    }
+
+    public String getDocID() {
+        return docID;
+    }
+
+    public void setDocID(String docID) {
+        this.docID = docID;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -26,35 +86,51 @@ public class NewDesk {
         this.name = name;
     }
 
-    public boolean isWirelessCharging() {
+    public String getWirelessCharging() {
         return wirelessCharging;
     }
 
-    public void setWirelessCharging(boolean wirelessCharging) {
+    public void setWirelessCharging(String wirelessCharging) {
         this.wirelessCharging = wirelessCharging;
     }
 
-    public boolean isBuiltinSpeaker() {
+    public String getBuiltinSpeaker() {
         return builtinSpeaker;
     }
 
-    public void setBuiltinSpeaker(boolean builtinSpeaker) {
+    public void setBuiltinSpeaker(String builtinSpeaker) {
         this.builtinSpeaker = builtinSpeaker;
     }
 
-    public boolean isBluetoothConnection() {
+    public String getBluetoothConnection() {
         return bluetoothConnection;
     }
 
-    public void setBluetoothConnection(boolean bluetoothConnection) {
+    public void setBluetoothConnection(String bluetoothConnection) {
         this.bluetoothConnection = bluetoothConnection;
     }
 
-    public boolean isGroupUser() {
+    public String getGroupUser() {
         return groupUser;
     }
 
-    public void setGroupUser(boolean groupUser) {
+    public void setGroupUser(String groupUser) {
         this.groupUser = groupUser;
+    }
+
+    public List<String> getBookDate() {
+        return bookDate;
+    }
+
+    public void setBookDate(List<String> bookDate) {
+        this.bookDate = bookDate;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }

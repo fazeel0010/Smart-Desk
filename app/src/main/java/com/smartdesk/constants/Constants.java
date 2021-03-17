@@ -14,8 +14,9 @@ public class Constants {
     public static final String smartDeskLogo = "https://thumbs.dreamstime.com/z/gold-smart-table-lamp-system-icon-isolated-black-background-internet-things-concept-wireless-connection-vector-187995951.jpg";
 
     //SmartDesk email
-    public static String emailID = "smartdesk21.uk@gmail.com";
+    public static String emailID = "smartdesk0010@gmail.com";
     public static String password = "smartdesk123";
+
     public static String SmartDesk = "Smart-Desk";
 
     //Roles
@@ -40,10 +41,6 @@ public class Constants {
 
     //Dto COnstants
     public static SignupUserDTO const_usersSignupDTO;
-    public static SignupUserDTO const_ConsumerSignupDTO;
-    public static WorkerRequestDTO const_WorkerRequestDTO;
-    public static Integer DISTANCE;
-    public static String WORKPLACE_TYPE;
 
     //Notification
     public static int notificationCount = 0;
@@ -52,19 +49,18 @@ public class Constants {
     public static String genderSelection = "Select Gender ⁕";
     public static String[] genderItems = {"Male", "Female"};
 
-    public static String citySelection = "Select City ⁕";
-    public static String[] cityItems = {"Karachi", "Lahore", "Islamabad"};
+    public static String wirelessChargingSelection = "Wireless Charging Supported? ⁕";
+    public static String builtinSpeakerSelection = "Built-in Speaker Supported? ⁕";
+    public static String bluetoothSelection = "Bluetooth Connectivity Supported? ⁕";
+    public static String groupUserSelection = "Single or Group User? ⁕";
 
-    public static String shopCategorySelection = "Select Workplace Category ⁕";
-    public static String[] shopCategoryItems = {"Local Shop", "Registered Company"};
-
-    public static String workingCategorySelection = "Select Service Category ⁕";
-    public static String[] workingCategoryItems = {"Car/Bike Mechanic Service", "Car Mechanic Service", "Bike Mechanic Service", "Car/Bike Puncher Service", "Car Puncher Service", "Bike Puncher Service", "Towing Service"};
+    public static String[] yesNo = {"Yes", "NO"};
+    public static String[] groupUserOptions = {"Single User", "Group User"};
 
 
     //Location Constants
-    public static Double const_lat = 24.8612;
-    public static Double const_lng = 67.0695;
+    public static Double const_lat = 51.509865;
+    public static Double const_lng = -0.118092;
     public static EditText addressEditext;
 
     //Otp Timeout
@@ -83,19 +79,4 @@ public class Constants {
 
     //Location Alert Dialog
     public static AlertDialog confirmationAlert;
-
-
-    //Tracking Order
-    public static String workerRequest = "Placed";
-    public static String workerConfirm = "Confirm";
-    public static String workerReachedLocation = "Reached";
-    public static String workerInProgress = "InProgress";
-    public static String workerDone = "Done";
-
-    public static String workerPayment = "Payment";
-    public static String workerSendAmount = "AmountSent";
-
-    public static String workerAmountNotFine = "NotAmountFine";
-    public static String workerAmountFine = "AmountFine";
-    public static String workerFinish = "Finish";
 }

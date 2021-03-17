@@ -82,8 +82,8 @@ public class ScreenSignUpOTP extends AppCompatActivity {
         UtilityFunctions.setupUI(findViewById(R.id.bg_main), context);
         if (Constants.const_usersSignupDTO != null)
             phoneNumber = Constants.const_usersSignupDTO.getWorkerPhone();
-        else
-            phoneNumber = Constants.const_ConsumerSignupDTO.getWorkerPhone();
+//        else
+//            phoneNumber = Constants.const_ConsumerSignupDTO.getWorkerPhone();
         phoneAuthticate();
     }
 
@@ -377,6 +377,7 @@ public class ScreenSignUpOTP extends AppCompatActivity {
                                 stopAnim();
 
                                 UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.const_usersSignupDTO.getWorkerPhone(), Constants.const_usersSignupDTO.getWorkerPassword(), task1.getResult().getId(), false);
+
                                 UtilityFunctions.sendFCMMessage(context, new Data(FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()).getTime(), "registration", Constants.const_usersSignupDTO.getWorkerName() + " Verification", "worker registration request for verification"));
                                 UtilityFunctions.saveNotficationCollection(new NotificationDTO(Constants.adminRole, FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()), Constants.const_usersSignupDTO.getWorkerName() + " Verification", "worker registration request for verification", false));
 
@@ -385,24 +386,25 @@ public class ScreenSignUpOTP extends AppCompatActivity {
                                 stopAnim();
                                 UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                             });
-                        } else if (Constants.const_ConsumerSignupDTO != null) {
-                            Constants.const_ConsumerSignupDTO.setUuID(user.getUid());
-                            Constants.const_ConsumerSignupDTO.setRegistrationDate(new Timestamp(new Date().getTime()));
-                            Constants.const_ConsumerSignupDTO.setUserStatus(Constants.activeStatus);
-                            Constants.const_ConsumerSignupDTO.setWorkerPassword(EncryptPassword.passwordEncryption(Constants.const_ConsumerSignupDTO.getWorkerPassword()));
-                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).add(Constants.const_ConsumerSignupDTO).addOnCompleteListener(task1 -> {
-                                stopAnim();
-
-                                UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.const_ConsumerSignupDTO.getWorkerPhone(), Constants.const_ConsumerSignupDTO.getWorkerPassword(), task1.getResult().getId(), false);
-                                UtilityFunctions.sendFCMMessage(context, new Data(FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()).getTime(), "registration", Constants.const_ConsumerSignupDTO.getWorkerName() + " User Registered", "user registered successfully in " + Constants.SmartDesk));
-                                UtilityFunctions.saveNotficationCollection(new NotificationDTO(Constants.adminRole, FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()), Constants.const_ConsumerSignupDTO.getWorkerName() + " User Registered", "user registered successfully in " + Constants.SmartDesk, false));
-
-                                UtilityFunctions.alertNoteWithOkButton(context, "Account Registered", "Your account registered successfully", Gravity.CENTER, R.color.whatsapp_green_dark, R.color.white, true, false, new Intent(context, ScreenLogin.class));
-                            }).addOnFailureListener(e -> {
-                                stopAnim();
-                                UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
-                            });
                         }
+//                        else if (Constants.const_ConsumerSignupDTO != null) {
+//                            Constants.const_ConsumerSignupDTO.setUuID(user.getUid());
+//                            Constants.const_ConsumerSignupDTO.setRegistrationDate(new Timestamp(new Date().getTime()));
+//                            Constants.const_ConsumerSignupDTO.setUserStatus(Constants.newAccountStatus);
+//                            Constants.const_ConsumerSignupDTO.setWorkerPassword(EncryptPassword.passwordEncryption(Constants.const_ConsumerSignupDTO.getWorkerPassword()));
+//                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).add(Constants.const_ConsumerSignupDTO).addOnCompleteListener(task1 -> {
+//                                stopAnim();
+//
+//                                UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.const_ConsumerSignupDTO.getWorkerPhone(), Constants.const_ConsumerSignupDTO.getWorkerPassword(), task1.getResult().getId(), false);
+//                                UtilityFunctions.sendFCMMessage(context, new Data(FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()).getTime(), "registration", Constants.const_ConsumerSignupDTO.getWorkerName() + " Verification", "worker registration request for verification"));
+//                                UtilityFunctions.saveNotficationCollection(new NotificationDTO(Constants.adminRole, FirebaseConstants.adminDocumentID, new Timestamp(new Date().getTime()), Constants.const_ConsumerSignupDTO.getWorkerName() + " Verification", "worker registration request for verification", false));
+//
+//                                UtilityFunctions.alertNoteWithOkButton(context, "Account Registered", "Your account registered successfully", Gravity.CENTER, R.color.whatsapp_green_dark, R.color.white, true, false, new Intent(context, ScreenLogin.class));
+//                            }).addOnFailureListener(e -> {
+//                                stopAnim();
+//                                UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
+//                            });
+//                        }
                     } else {
                         Log.d("OTP", "signInWithCredential:failure", task.getException());
                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {

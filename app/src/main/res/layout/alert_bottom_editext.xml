@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/selector_editext"
-                android:hint="Mechanic Name ⁕"
+                android:hint="Worker Name ⁕"
                 android:imeActionLabel="Done"
                 android:imeOptions="actionDone"
                 android:inputType="textPersonName"

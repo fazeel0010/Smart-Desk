@@ -73,7 +73,7 @@
                         android:id="@+id/name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Mechanic Name"
+                        android:text="Worker Name"
                         android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -118,7 +118,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="0335-2426258"
+                            android:text="07-123456789"
                             android:textColor="@color/forground2"
                             android:textSize="14sp" />
 

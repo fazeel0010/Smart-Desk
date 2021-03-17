@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -23,9 +24,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
-import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.model.signup.SignupUserDTO;
+import com.smartdesk.model.SmartDesk.NewDesk;
 import com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail;
 import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
 import com.smartdesk.utility.UtilityFunctions;
@@ -37,6 +37,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.smartdesk.utility.UtilityFunctions.getDeskRegDate;
 import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 
 public class FragmentDeskAvailable extends Fragment {
@@ -49,7 +50,7 @@ public class FragmentDeskAvailable extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView recyclerView;
     Adapter adapter;
-    List<SignupUserDTO> approvedMechanicDTOList = new ArrayList<>();
+    List<NewDesk> avaiablesDesks = new ArrayList<>();
 
     public FragmentDeskAvailable() {
     }
@@ -63,7 +64,7 @@ public class FragmentDeskAvailable extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_request, container, false);
         initIds();
-        ((TextView)view.findViewById(R.id.listEmptyText)).setText("Desks are not available");
+        ((TextView) view.findViewById(R.id.listEmptyText)).setText("Desks are not available");
         setRecyclerView();
         showDataOnList(false);
         return view;
@@ -83,7 +84,7 @@ public class FragmentDeskAvailable extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                adapter = new Adapter(approvedMechanicDTOList);
+                adapter = new Adapter(avaiablesDesks);
                 recyclerView = UtilityFunctions.setRecyclerView((RecyclerView) view.findViewById(R.id.recycler_view), context);
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -111,31 +112,28 @@ public class FragmentDeskAvailable extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isSwipe)
                 ((ScreenDeskUserHome) context).startAnim();
-            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.deskUserRole).whereEqualTo("userStatus", Constants.newAccountStatus).get()
+            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).get()
                     .addOnSuccessListener(task -> {
                         onItemsLoadComplete();
-                        approvedMechanicDTOList.clear();
+                        avaiablesDesks.clear();
                         if (!isSwipe)
                             ((ScreenDeskUserHome) context).stopAnim();
                         if (!task.isEmpty()) {
-                            List<SignupUserDTO> signupUserDTOSList = task.toObjects(SignupUserDTO.class);
-                            if (signupUserDTOSList.isEmpty()) {
+                            List<NewDesk> deskLLL = task.toObjects(NewDesk.class);
+                            if (deskLLL.isEmpty()) {
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                 adapter.notifyDataSetChanged();
                             } else {
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
-//                                if (signupUserDTOSList.size() > 0) {
-//                                    for (int i = 0; i < task.size(); i++)
-//                                        signupUserDTOSList.get(i).setLocalDocuementID(task.getDocuments().get(i).getId());
-//                                    view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
-//                                    approvedMechanicDTOList.clear();
-//                                    approvedMechanicDTOList.addAll(signupUserDTOSList);
-//                                    adapter.notifyDataSetChanged();
-//                                } else {
-
-                                view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
-                                adapter.notifyDataSetChanged();
-//                                }
+                                if (deskLLL.size() > 0) {
+                                    view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+                                    avaiablesDesks.clear();
+                                    avaiablesDesks.addAll(deskLLL);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         } else {
                             view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
@@ -145,7 +143,7 @@ public class FragmentDeskAvailable extends Fragment {
                         adapter.notifyDataSetChanged();
                     }).addOnFailureListener(e -> {
                 onItemsLoadComplete();
-                approvedMechanicDTOList.clear();
+                avaiablesDesks.clear();
                 if (!isSwipe)
                     ((ScreenDeskUserHome) context).stopAnim();
                 UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
@@ -156,17 +154,17 @@ public class FragmentDeskAvailable extends Fragment {
 
     public class Adapter extends RecyclerView.Adapter<FragmentDeskAvailable.Adapter.ViewHolder> {
 
-        List<SignupUserDTO> mechanicsList;
+        List<NewDesk> availableDeskList;
 
-        public Adapter(List<SignupUserDTO> mechanicsList) {
-            this.mechanicsList = mechanicsList;
+        public Adapter(List<NewDesk> availableDeskList) {
+            this.availableDeskList = availableDeskList;
         }
 
         @NonNull
         @Override
         public FragmentDeskAvailable.Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View view = inflater.inflate(R.layout.rv_item_approved_users, parent, false);
+            View view = inflater.inflate(R.layout.rv_item_for_desk, parent, false);
             view.findViewById(R.id.cardView).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.tumblr_logo));
             return new FragmentDeskAvailable.Adapter.ViewHolder(view);
         }
@@ -180,46 +178,40 @@ public class FragmentDeskAvailable extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull FragmentDeskAvailable.Adapter.ViewHolder holder, final int position) {
             final Context innerContext = holder.itemView.getContext();
-            Date registrationDate = mechanicsList.get(position).getRegistrationDate();
-            String timeAgo = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
-//            holder.ratingBar.setRating(UtilityFunctions.calculateRating(mechanicsList.get(position).getRatingUserCount(), mechanicsList.get(position).getRatingTotal()));
-            holder.timeAgo.setText(timeAgo);
-            holder.name.setText(mechanicsList.get(position).getWorkerName());
-            holder.phoneNumber.setText(UtilityFunctions.getPhoneNumberInFormat(mechanicsList.get(position).getWorkerPhone()));
-            picassoGetCircleImage(context, mechanicsList.get(position).getProfilePicture(), holder.profilePic, holder.profile_shimmer, R.drawable.side_profile_icon);
 
-            holder.itemCardview.setOnClickListener(v -> {
+            Date registrationDate = availableDeskList.get(position).getRegistrationDate();
+            String timeAgo = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
+            holder.timeAgo.setText(timeAgo);
+
+            holder.regDate.setText(UtilityFunctions.getDateFormat(availableDeskList.get(position).getRegistrationDate()));
+            holder.name.setText(availableDeskList.get(position).getName());
+            holder.deskID.setText(UtilityFunctions.getDeskID(availableDeskList.get(position).id));
+
+            holder.mordetails.setOnClickListener(v -> {
                 try {
-                    ScreenDeskUserDetail.deskUserDetailsScreenDTO = mechanicsList.get(position);
-                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenDeskUserDetail.class), false, 0);
+                    ScreenSmartDeskDetailUser.deskUserDetailsScreenDTO = availableDeskList.get(position);
+                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenSmartDeskDetailUser.class), false, 0);
                 } catch (Exception ex) {
                 }
             });
         }
 
         public int getItemCount() {
-            return mechanicsList.size();
+            return availableDeskList.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView name, phoneNumber, city, timeAgo, cnic;
-            RatingBar ratingBar;
-            CircleImageView profilePic;
-            ShimmerFrameLayout profile_shimmer;
-            LinearLayout itemCardview;
+            TextView name, deskID, regDate,timeAgo;
+            Button mordetails;
 
             public ViewHolder(@NonNull View view) {
                 super(view);
-                itemCardview = view.findViewById(R.id.cardView);
-                name = view.findViewById(R.id.name);
-                phoneNumber = view.findViewById(R.id.phoneNumber);
-                profile_shimmer = view.findViewById(R.id.profile_shimmer);
-                profilePic = view.findViewById(R.id.profilePic);
-                cnic = view.findViewById(R.id.cnic);
-                city = view.findViewById(R.id.address);
-                ratingBar = view.findViewById(R.id.rating);
+                mordetails = view.findViewById(R.id.moreDetailsbtn);
                 timeAgo = view.findViewById(R.id.timeAgo);
+                name = view.findViewById(R.id.name);
+                deskID = view.findViewById(R.id.deskID);
+                regDate = view.findViewById(R.id.regDate);
             }
         }
     }
