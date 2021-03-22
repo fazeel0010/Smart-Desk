@@ -1014,7 +1014,11 @@ public class UtilityFunctions {
     }
 
     public static String getPhoneNumberInFormat(String number) {
-        return number.substring(0, 2) + "-" + number.substring(2);
+        try {
+            return number.substring(0, 2) + "-" + number.substring(2);
+        } catch (Exception ex) {
+            return "";
+        }
     }
 
     public static String getDeskID(String docID) {

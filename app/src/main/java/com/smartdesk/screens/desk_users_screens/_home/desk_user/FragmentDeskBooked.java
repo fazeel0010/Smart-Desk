@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -25,6 +26,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
+import com.smartdesk.model.SmartDesk.DesksSortedList;
+import com.smartdesk.model.SmartDesk.NewDesk;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.screens.admin.desk_user_status.ScreenDeskUserDetail;
 import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
@@ -49,7 +53,8 @@ public class FragmentDeskBooked extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView recyclerView;
     Adapter adapter;
-    List<SignupUserDTO> approvedMechanicDTOList = new ArrayList<>();
+    DesksSortedList deskListNew = new DesksSortedList();
+    String searchDateString = "";
 
     public FragmentDeskBooked() {
     }
@@ -63,7 +68,7 @@ public class FragmentDeskBooked extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_approved, container, false);
         initIds();
-        ((TextView)view.findViewById(R.id.listEmptyText)).setText("No Booked Desks Found");
+        ((TextView) view.findViewById(R.id.listEmptyText)).setText("No Booked Desks Found");
         setRecyclerView();
         showDataOnList(false);
         return view;
@@ -81,7 +86,7 @@ public class FragmentDeskBooked extends Fragment {
 
     public void setRecyclerView() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            adapter = new Adapter(approvedMechanicDTOList);
+            adapter = new Adapter(deskListNew);
             recyclerView = UtilityFunctions.setRecyclerView((RecyclerView) view.findViewById(R.id.recycler_view), context);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -108,68 +113,79 @@ public class FragmentDeskBooked extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (!isSwipe)
                 ((ScreenDeskUserHome) context).startAnim();
-            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.deskUserRole).whereEqualTo("userStatus", Constants.activeStatus).get().
-                    addOnSuccessListener(task -> {
-                        onItemsLoadComplete();
-                        approvedMechanicDTOList.clear();
-                        if (!isSwipe)
-                            ((ScreenDeskUserHome) context).stopAnim();
+            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).get().
+                    addOnSuccessListener(task ->
+                    {
+                        ((ScreenDeskUserHome) context).stopAnim();
                         if (!task.isEmpty()) {
-                            List<SignupUserDTO> signupUserDTOSList = task.toObjects(SignupUserDTO.class);
-                            if (signupUserDTOSList.isEmpty()) {
+
+                            List<NewDesk> deskLLL = task.toObjects(NewDesk.class);
+                            if (deskLLL.isEmpty()) {
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                 adapter.notifyDataSetChanged();
                             } else {
-                                view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
 
-//                                if (signupUserDTOSList.size() > 0) {
-//                                    for (int i = 0; i < task.size(); i++)
-//                                        signupUserDTOSList.get(i).setLocalDocuementID(task.getDocuments().get(i).getId());
-//                                    view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
-//                                    approvedMechanicDTOList.clear();
-//                                    approvedMechanicDTOList.addAll(signupUserDTOSList);
-//                                    adapter.notifyDataSetChanged();
-//                                } else {
-                                view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
-                                adapter.notifyDataSetChanged();
-//                                }
+                                view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+                                List<NewDesk> filterData = new ArrayList<>();
+                                List<String> datesList = new ArrayList<>();
+                                for (int i = 0; i < deskLLL.size(); i++) {
+                                    for (UserBookDate t : deskLLL.get(i).bookDate) {
+                                        if (t.userDocId.equals(Constants.USER_DOCUMENT_ID)) {
+                                            filterData.add(deskLLL.get(i));
+                                            datesList.add(t.getDate());
+                                        }
+                                    }
+                                }
+
+                                if (filterData.size() > 0) {
+                                    view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
+                                    deskListNew.clear();
+                                    deskListNew.addAll(filterData,datesList);
+                                    adapter.notifyDataSetChanged();
+                                } else {
+                                    view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         } else {
                             view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                             adapter.notifyDataSetChanged();
-//                                redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                         }
+                        onItemsLoadComplete();
                         adapter.notifyDataSetChanged();
-                    }).addOnFailureListener(e -> {
-                approvedMechanicDTOList.clear();
-                onItemsLoadComplete();
-                if (!isSwipe)
-                    ((ScreenDeskUserHome) context).stopAnim();
-                UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
-                adapter.notifyDataSetChanged();
-            });
+                    }).
+                    addOnFailureListener(e ->
+                    {
+                        ((ScreenDeskUserHome) context).stopAnim();
+                        deskListNew.clear();
+                        onItemsLoadComplete();
+                        if (!isSwipe)
+                            ((ScreenDeskUserHome) context).stopAnim();
+                        UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
+                        adapter.notifyDataSetChanged();
+                    });
         }, 0);
     }
 
     public class Adapter extends RecyclerView.Adapter<FragmentDeskBooked.Adapter.ViewHolder> {
 
-        List<SignupUserDTO> mechanicsList;
+        DesksSortedList deskListNew;
 
-        public Adapter(List<SignupUserDTO> mechanicsList) {
-            this.mechanicsList = mechanicsList;
+        public Adapter(DesksSortedList deskListNew) {
+            this.deskListNew = deskListNew;
         }
 
         @NonNull
         @Override
         public FragmentDeskBooked.Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View view = inflater.inflate(R.layout.rv_item_approved_users, parent, false);
-            view.findViewById(R.id.cardView).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.whatsapp_green_dark));
+            View view = inflater.inflate(R.layout.rv_item_for_desk_booked, parent, false);
+            view.findViewById(R.id.cardView).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.tumblr_logo));
             return new FragmentDeskBooked.Adapter.ViewHolder(view);
         }
 
         @Override
-        public void onViewDetachedFromWindow(ViewHolder holder) {
+        public void onViewDetachedFromWindow(FragmentDeskBooked.Adapter.ViewHolder holder) {
             super.onViewDetachedFromWindow(holder);
             holder.itemView.clearAnimation();
         }
@@ -177,45 +193,44 @@ public class FragmentDeskBooked extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull FragmentDeskBooked.Adapter.ViewHolder holder, final int position) {
             final Context innerContext = holder.itemView.getContext();
-            Date registrationDate = mechanicsList.get(position).getRegistrationDate();
-            String timeAgo = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
-//            holder.ratingBar.setRating(UtilityFunctions.calculateRating(mechanicsList.get(position).getRatingUserCount(), mechanicsList.get(position).getRatingTotal()));
-            holder.timeAgo.setText(timeAgo);
-            holder.name.setText(mechanicsList.get(position).getWorkerName());
-            holder.phoneNumber.setText(UtilityFunctions.getPhoneNumberInFormat(mechanicsList.get(position).getWorkerPhone()));
-            picassoGetCircleImage(context, mechanicsList.get(position).getProfilePicture(), holder.profilePic, holder.profile_shimmer, R.drawable.side_profile_icon);
 
-            holder.itemCardview.setOnClickListener(v -> {
+            Date registrationDate = deskListNew.deskListNew.get(position).getRegistrationDate();
+            String timeAgo = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
+            holder.timeAgo.setText(timeAgo);
+
+            holder.regDate.setText(UtilityFunctions.getDateFormat(deskListNew.deskListNew.get(position).getRegistrationDate()));
+            holder.name.setText(deskListNew.deskListNew.get(position).getName());
+            holder.deskID.setText(UtilityFunctions.getDeskID(deskListNew.deskListNew.get(position).id));
+            holder.Date.setText("Booked Date: "+deskListNew.dateList.get(position));
+
+            holder.mordetails.setOnClickListener(v -> {
                 try {
-                    ScreenDeskUserDetail.deskUserDetailsScreenDTO = mechanicsList.get(position);
-                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenDeskUserDetail.class), false, 0);
+                    ScreenSmartDeskDetailUser.deskUserDetailsScreenDTO = deskListNew.deskListNew.get(position);
+                    Intent intent = new Intent(innerContext, ScreenSmartDeskDetailUser.class);
+                    intent.putExtra("date", searchDateString);
+                    UtilityFunctions.sendIntentNormal((Activity) innerContext, intent, false, 0);
                 } catch (Exception ex) {
                 }
             });
         }
 
         public int getItemCount() {
-            return mechanicsList.size();
+            return deskListNew.deskListNew.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView name, phoneNumber, city, timeAgo;
-            RatingBar ratingBar;
-            CircleImageView profilePic;
-            ShimmerFrameLayout profile_shimmer;
-            LinearLayout itemCardview;
+            TextView name, deskID, regDate, timeAgo, Date;
+            Button mordetails;
 
             public ViewHolder(@NonNull View view) {
                 super(view);
-                itemCardview = view.findViewById(R.id.cardView);
-                name = view.findViewById(R.id.name);
-                phoneNumber = view.findViewById(R.id.phoneNumber);
-                profile_shimmer = view.findViewById(R.id.profile_shimmer);
-                profilePic = view.findViewById(R.id.profilePic);
-                city = view.findViewById(R.id.address);
-                ratingBar = view.findViewById(R.id.rating);
+                Date = view.findViewById(R.id.Date);
+                mordetails = view.findViewById(R.id.moreDetailsbtn);
                 timeAgo = view.findViewById(R.id.timeAgo);
+                name = view.findViewById(R.id.name);
+                deskID = view.findViewById(R.id.deskID);
+                regDate = view.findViewById(R.id.regDate);
             }
         }
     }

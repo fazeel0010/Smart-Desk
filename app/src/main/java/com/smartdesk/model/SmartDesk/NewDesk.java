@@ -1,5 +1,6 @@
 package com.smartdesk.model.SmartDesk;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.sql.Timestamp;
@@ -25,13 +26,13 @@ public class NewDesk {
     public Double deskLat;
     public Double deskLng;
 
-    public List<String> bookDate;
+    public List<UserBookDate> bookDate;
 
     @ServerTimestamp
     public Date registrationDate;
 
 
-    public NewDesk(){
+    public NewDesk() {
         docID = "";
         id = "";
         name = "Smart Desk";
@@ -41,8 +42,8 @@ public class NewDesk {
         groupUser = "";
         bookDate = new ArrayList<>();
         registrationDate = new Timestamp(new Date().getTime());
-        deskLat =const_lat;
-        deskLng =const_lng;
+        deskLat = const_lat;
+        deskLng = const_lng;
     }
 
 
@@ -118,11 +119,11 @@ public class NewDesk {
         this.groupUser = groupUser;
     }
 
-    public List<String> getBookDate() {
+    public List<UserBookDate> getBookDate() {
         return bookDate;
     }
 
-    public void setBookDate(List<String> bookDate) {
+    public void setBookDate(List<UserBookDate> bookDate) {
         this.bookDate = bookDate;
     }
 

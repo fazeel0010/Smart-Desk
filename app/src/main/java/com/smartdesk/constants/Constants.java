@@ -4,7 +4,6 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.smartdesk.model.hire_worker.WorkerRequestDTO;
 import com.smartdesk.model.signup.SignupUserDTO;
 
 public class Constants {
@@ -39,7 +38,7 @@ public class Constants {
     public static final String SP_DOCUMENT_ID = "Document";
     public static final String SP_ISLOGIN = "isLogin";
 
-    //Dto COnstants
+    //Dto Constants
     public static SignupUserDTO const_usersSignupDTO;
 
     //Notification
@@ -55,7 +54,7 @@ public class Constants {
     public static String groupUserSelection = "Single or Group User? ⁕";
 
     public static String[] yesNo = {"Yes", "NO"};
-    public static String[] groupUserOptions = {"Single User", "Group User"};
+    public static String[] groupUserOptions = {"Single User", "Group User (3 max)", "Group User (6 max)", "Group User (8 max)"};
 
 
     //Location Constants

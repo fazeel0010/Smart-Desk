@@ -125,6 +125,11 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
         Date registrationDate = deskUserDetailsScreenDTO.getRegistrationDate();
         String time = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
         binding.timeAgo.setText(time);
+
+        binding.wirelessChargingText.setText(deskUserDetailsScreenDTO.wirelessCharging);
+        binding.bluetoothConnectionText.setText(deskUserDetailsScreenDTO.bluetoothConnection);
+        binding.builtinSpeakerText.setText(deskUserDetailsScreenDTO.builtinSpeaker);
+        binding.groupUserText.setText(deskUserDetailsScreenDTO.groupUser);
     }
 
     public void actionBar(String actionTitle) {

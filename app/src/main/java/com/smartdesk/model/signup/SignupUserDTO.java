@@ -1,9 +1,12 @@
 package com.smartdesk.model.signup;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.smartdesk.constants.Constants;
 import com.google.firebase.firestore.ServerTimestamp;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 
 import java.util.Date;
+import java.util.List;
 
 public class SignupUserDTO {
 
@@ -32,6 +35,9 @@ public class SignupUserDTO {
 
     @ServerTimestamp
     Date registrationDate;
+
+    public List<UserBookDate> bookDate;
+
 
     public SignupUserDTO(){
     }
@@ -194,5 +200,13 @@ public class SignupUserDTO {
 
     public void setDistance(Double distance) {
         this.distance = distance;
+    }
+
+    public List<UserBookDate> getBookDate() {
+        return bookDate;
+    }
+
+    public void setBookDate(List<UserBookDate> bookDate) {
+        this.bookDate = bookDate;
     }
 }

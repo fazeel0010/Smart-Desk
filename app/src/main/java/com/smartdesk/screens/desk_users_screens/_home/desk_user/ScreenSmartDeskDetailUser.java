@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,15 +28,17 @@ import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.databinding.ScreenSmartDeskDetailManagerBinding;
 import com.smartdesk.databinding.ScreenSmartDeskDetailUserBinding;
 import com.smartdesk.model.SmartDesk.NewDesk;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.model.fcm.Data;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.WorkaroundMapFragment;
 import com.smartdesk.utility.memory.MemoryCache;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ScreenSmartDeskDetailUser extends AppCompatActivity {
@@ -44,6 +47,8 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
     private Activity context;
     public static NewDesk deskUserDetailsScreenDTO;
 
+    String docId = "";
+    String bookDate = "02-12-2021";
 
     private GoogleMap mMap;
 
@@ -63,6 +68,11 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
 
         actionBar("Smart Desk Detail");
         initIds();
+
+        try {
+            bookDate = getIntent().getStringExtra("date");
+        } catch (Exception ex) {
+        }
 
         if (mMap == null) {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -120,6 +130,13 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
         Date registrationDate = deskUserDetailsScreenDTO.getRegistrationDate();
         String time = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
         binding.timeAgo.setText(time);
+
+
+        binding.wirelessChargingText.setText(deskUserDetailsScreenDTO.wirelessCharging);
+        binding.bluetoothConnectionText.setText(deskUserDetailsScreenDTO.bluetoothConnection);
+        binding.builtinSpeakerText.setText(deskUserDetailsScreenDTO.builtinSpeaker);
+        binding.groupUserText.setText(deskUserDetailsScreenDTO.groupUser);
+        docId = UtilityFunctions.getDocumentID(context);
     }
 
     public void actionBar(String actionTitle) {
@@ -180,8 +197,6 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
                 confirmationAlert.dismiss();
                 startAnim();
                 if (color == R.color.red) {
-                    String docId = UtilityFunctions.getDocumentID(context);
-
                     FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).document(deskUserDetailsScreenDTO.getDocID())
                             .delete()
                             .addOnSuccessListener(aVoid -> {
@@ -190,7 +205,7 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
                                 UtilityFunctions.sendFCMMessage(context, new Data(docId, new Timestamp(new Date().getTime()).getTime(), "deletion", "SmartDesk deleted", deskUserDetailsScreenDTO.getName() + " your desk has been deleted"));
                                 UtilityFunctions.deleteUserCompletelu(docId);
 
-                                UtilityFunctions.greenSnackBar(context,  "Smart Desk Deleted Successfully!", Snackbar.LENGTH_LONG);
+                                UtilityFunctions.greenSnackBar(context, "Smart Desk Deleted Successfully!", Snackbar.LENGTH_LONG);
                                 new Handler(Looper.getMainLooper()).postDelayed(() -> finish(), 1000);
                             }).addOnFailureListener(e -> {
                         stopAnim();
@@ -220,7 +235,70 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
         }
     }
 
+
     public void Book(View view) {
-        UtilityFunctions.orangeSnackBar(context,"Feature Not Implemented Yet",Snackbar.LENGTH_LONG);
+        try {
+            AlertDialog confirmationAlert = new AlertDialog.Builder(context).create();
+            final View dialogView = getLayoutInflater().inflate(R.layout.alert_dialog_return, null);
+            ((TextView) dialogView.findViewById(R.id.noteTitle)).setText("Smart Desk Booking");
+            dialogView.findViewById(R.id.llTITLECOLOR).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.SmartDesk_Blue));
+            dialogView.findViewById(R.id.yesbtn).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.SmartDesk_Blue));
+            ((TextView) dialogView.findViewById(R.id.noteText)).setText("Are you sure you want to Book the desk for the date of\n" + bookDate + " ?");
+            dialogView.findViewById(R.id.yesbtn).setOnClickListener(v -> {
+                confirmationAlert.dismiss();
+
+                UserBookDate booking = new UserBookDate();
+                booking.deskDocId = deskUserDetailsScreenDTO.docID;
+                booking.userDocId = docId;
+                booking.date = bookDate;
+
+                if (deskUserDetailsScreenDTO.bookDate == null)
+                    deskUserDetailsScreenDTO.bookDate = new ArrayList<>();
+
+                deskUserDetailsScreenDTO.bookDate.add(booking);
+
+                startAnim();
+                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
+                        .document(deskUserDetailsScreenDTO.getDocID()).set(deskUserDetailsScreenDTO).
+                        addOnCompleteListener(task ->
+                        {
+                            if (task.isSuccessful()) {
+                                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID)
+                                        .get().addOnCompleteListener(userTask -> {
+                                    stopAnim();
+                                    if (userTask.isSuccessful()) {
+                                        SignupUserDTO user = userTask.getResult().toObject(SignupUserDTO.class);
+                                        if (user.bookDate == null)
+                                            user.bookDate = new ArrayList<>();
+
+                                        user.bookDate.add(booking);
+                                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID)
+                                                .set(user);
+
+                                        UtilityFunctions.alertNoteWithOkButton(context, "Smart Desk Booking", "Your desk has been booked Successfully!",
+                                                Gravity.CENTER, R.color.whatsapp_green_dark, R.color.white, true, true, null);
+                                    }
+                                });
+                            } else {
+                                stopAnim();
+                                UtilityFunctions.redSnackBar(context, "Unfortunately,Desk not book!", Snackbar.LENGTH_LONG);
+                            }
+                        }).addOnFailureListener(e ->
+                        {
+                            stopAnim();
+                            UtilityFunctions.redSnackBar(context, "Unfortunately, Desk not book!", Snackbar.LENGTH_LONG);
+                        }
+                );
+            });
+
+            dialogView.findViewById(R.id.nobtn).setOnClickListener(v -> confirmationAlert.dismiss());
+            confirmationAlert.setView(dialogView);
+            confirmationAlert.setCancelable(false);
+            confirmationAlert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            confirmationAlert.show();
+        } catch (
+                Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
