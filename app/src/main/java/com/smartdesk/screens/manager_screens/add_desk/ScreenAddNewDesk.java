@@ -214,7 +214,7 @@ public class ScreenAddNewDesk extends AppCompatActivity {
 
         deskItem.name = getDataFromEditext(binding.smartDeskname, "Invalid Name", 3);
 
-        if (!UtilityFunctions.isValidName(deskItem.name)) {
+        if (deskItem.name.length() < 3) {
             binding.smartDeskname.setError("Invalid Name");
             isOkay = false;
         }

@@ -814,7 +814,6 @@ public class UtilityFunctions {
     }
 
     public static String getAddressLatLng(Activity activity, Double lat, Double lng) {
-        System.out.println(lat + "LATTTTTTTTTTTTTTT " + lng);
         Geocoder geocoder;
         List<Address> addresses;
         geocoder = new Geocoder(activity, Locale.getDefault());
@@ -826,8 +825,6 @@ public class UtilityFunctions {
                 for (int i = 0; i < addresses.size(); i++) {
                     address = addresses.get(0).getAddressLine(0);
                     String address1 = addresses.get(0).getAddressLine(1);
-                    System.out.println("address1" + address);
-                    System.out.println("address2" + address1);
                     break;
                 }
                 return address;

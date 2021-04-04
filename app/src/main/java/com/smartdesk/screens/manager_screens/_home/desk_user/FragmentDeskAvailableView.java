@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.smartdesk.utility.UtilityFunctions.getAddressLatLng;
 import static com.smartdesk.utility.UtilityFunctions.getDeskRegDate;
 import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 
@@ -181,7 +182,7 @@ public class FragmentDeskAvailableView extends Fragment {
             holder.regDate.setText(UtilityFunctions.getDateFormat(desksList.get(position).getRegistrationDate()));
             holder.name.setText(desksList.get(position).getName());
             holder.deskID.setText(UtilityFunctions.getDeskID(desksList.get(position).id));
-
+            holder.city.setText(getAddressLatLng(context, desksList.get(position).getDeskLat(), desksList.get(position).getDeskLng()));
             holder.mordetails.setOnClickListener(v -> {
                 try {
                     ScreenSmartDeskDetailManager.deskUserDetailsScreenDTO = desksList.get(position);
@@ -197,12 +198,13 @@ public class FragmentDeskAvailableView extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            TextView name, deskID, regDate,timeAgo;
+            TextView name, deskID, regDate,timeAgo,city;
             Button mordetails;
 
             public ViewHolder(@NonNull View view) {
                 super(view);
                 mordetails = view.findViewById(R.id.moreDetailsbtn);
+                city = view.findViewById(R.id.address);
                 timeAgo = view.findViewById(R.id.timeAgo);
                 name = view.findViewById(R.id.name);
                 deskID = view.findViewById(R.id.deskID);

@@ -180,6 +180,7 @@ public class FragmentDeskAvailable extends Fragment {
                                             onItemsLoadComplete();
                                             avaiablesDesks.clear();
                                             ((TextView) view.findViewById(R.id.listEmptyText)).setText("Desks are not available on the selected date \n(" + searchDateString + ")");
+
                                             if (!isSwipe)
                                                 ((ScreenDeskUserHome) context).stopAnim();
                                             if (!task.isEmpty()) {
@@ -193,13 +194,17 @@ public class FragmentDeskAvailable extends Fragment {
                                                     List<NewDesk> filterList = new ArrayList<>();
                                                     for (int i = 0; i < deskLLL.size(); i++) {
                                                         if (deskLLL.get(i).bookDate != null) {
+                                                            boolean isFound = false;
                                                             for (UserBookDate t : deskLLL.get(i).bookDate) {
-                                                                if (!t.date.equals(searchDateString)) {
-                                                                    filterList.add(deskLLL.get(i));
+                                                                if (t.date.equals(searchDateString)) {
+                                                                    isFound=true;
                                                                     break;
                                                                 }
                                                             }
-                                                        }
+                                                            if(!isFound)
+                                                                filterList.add(deskLLL.get(i));
+                                                        }else
+                                                            filterList.add(deskLLL.get(i));
                                                     }
 
                                                     if (filterList.size() > 0) {
