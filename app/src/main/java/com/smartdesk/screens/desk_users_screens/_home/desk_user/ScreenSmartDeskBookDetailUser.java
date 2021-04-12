@@ -1,4 +1,4 @@
-package com.smartdesk.screens.manager_screens._home.desk_user;
+package com.smartdesk.screens.desk_users_screens._home.desk_user;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -7,16 +7,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,31 +33,29 @@ import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
-import com.smartdesk.databinding.ScreenSmartDeskDetailManagerBinding;
+import com.smartdesk.databinding.ScreenSmartDeskDetailUserBinding;
 import com.smartdesk.model.SmartDesk.NewDesk;
 import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.model.fcm.Data;
-import com.smartdesk.model.notification.NotificationDTO;
+import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.library.WorkaroundMapFragment;
 import com.smartdesk.utility.memory.MemoryCache;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
-import static java.util.ResourceBundle.clearCache;
+public class ScreenSmartDeskBookDetailUser extends AppCompatActivity {
 
-public class ScreenSmartDeskDetailManager extends AppCompatActivity {
-
-    ScreenSmartDeskDetailManagerBinding binding;
+    ScreenSmartDeskDetailUserBinding binding;
     private Activity context;
     public static NewDesk deskUserDetailsScreenDTO;
 
+    String docId = "";
 
     private GoogleMap mMap;
-    String userType = "Desk-User";
 
     @Override
     protected void onDestroy() {
@@ -65,11 +67,10 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ScreenSmartDeskDetailManagerBinding.inflate(getLayoutInflater());
+        binding = ScreenSmartDeskDetailUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         context = this;
 
-        binding.recyclerViewCard.setVisibility(View.GONE);
         actionBar("Smart Desk Detail");
         initIds();
 
@@ -83,7 +84,7 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
                     mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                     mMap.getUiSettings().setZoomControlsEnabled(true);
 
-                    final NestedScrollView mScrollView = findViewById(R.id.scrollView); //parent scrollview in xml, give your scrollview id value
+                    final ScrollView mScrollView = findViewById(R.id.scrollView); //parent scrollview in xml, give your scrollview id value
                     ((WorkaroundMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                             .setListener(() -> mScrollView.requestDisallowInterceptTouchEvent(true));
 
@@ -125,10 +126,37 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
         String time = UtilityFunctions.remaingTimeCalculation(new Timestamp(new Date().getTime()), new Timestamp(registrationDate.getTime()));
         binding.timeAgo.setText(time);
 
+
         binding.wirelessChargingText.setText(deskUserDetailsScreenDTO.wirelessCharging);
         binding.bluetoothConnectionText.setText(deskUserDetailsScreenDTO.bluetoothConnection);
         binding.builtinSpeakerText.setText(deskUserDetailsScreenDTO.builtinSpeaker);
         binding.groupUserText.setText(deskUserDetailsScreenDTO.groupUser);
+        docId = UtilityFunctions.getDocumentID(context);
+        binding.llStatuslist.setVisibility(View.GONE);
+
+        setRecyclerView();
+
+        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(Constants.USER_DOCUMENT_ID).get().addOnSuccessListener(
+                queryDocumentSnapshots ->
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (queryDocumentSnapshots.exists()) {
+                                cUser = queryDocumentSnapshots.toObject(SignupUserDTO.class);
+                                if (cUser != null) {
+                                    List<UserBookDate> ub = new ArrayList<>();
+                                    for (UserBookDate temp : book) {
+                                        if (temp.getUserDocId().equals(cUser.getUuID())) {
+                                            ub.add(temp);
+                                        }
+                                    }
+                                    deskListNew.clear();
+                                    deskListNew.addAll(ub);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            } else
+                                System.out.println("FAILED");
+                        })).
+                addOnFailureListener(e -> {
+                });
     }
 
     public void actionBar(String actionTitle) {
@@ -189,8 +217,6 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
                 confirmationAlert.dismiss();
                 startAnim();
                 if (color == R.color.red) {
-                    String docId = UtilityFunctions.getDocumentID(context);
-
                     FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).document(deskUserDetailsScreenDTO.getDocID())
                             .delete()
                             .addOnSuccessListener(aVoid -> {
@@ -226,6 +252,121 @@ public class ScreenSmartDeskDetailManager extends AppCompatActivity {
                     latLng, Constants.cameraZoomInMap);
             mMap.animateCamera(location);
         } catch (Exception ex) {
+        }
+    }
+
+    RecyclerView recyclerView;
+    ScreenSmartDeskBookDetailUser.Adapter adapter;
+    List<UserBookDate> deskListNew = new ArrayList<UserBookDate>();
+    public SignupUserDTO cUser = new SignupUserDTO();
+
+    public void setRecyclerView() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            adapter = new ScreenSmartDeskBookDetailUser.Adapter(deskListNew);
+            recyclerView = UtilityFunctions.setRecyclerView(binding.recyclerView, context);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+        }, 0);
+    }
+
+    public class Adapter extends RecyclerView.Adapter<ScreenSmartDeskBookDetailUser.Adapter.ViewHolder> {
+
+        List<UserBookDate> userBookDates;
+
+        public Adapter(List<UserBookDate> userBookDates) {
+            this.userBookDates = userBookDates;
+        }
+
+        @NonNull
+        @Override
+        public ScreenSmartDeskBookDetailUser.Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View view = inflater.inflate(R.layout.rv_item_book, parent, false);
+            return new ScreenSmartDeskBookDetailUser.Adapter.ViewHolder(view);
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(ScreenSmartDeskBookDetailUser.Adapter.ViewHolder holder) {
+            super.onViewDetachedFromWindow(holder);
+            holder.itemView.clearAnimation();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ScreenSmartDeskBookDetailUser.Adapter.ViewHolder holder, final int position) {
+
+            UserBookDate cUB = userBookDates.get(position);
+            holder.name.setText("Book By Unknown User");
+            if (cUser != null) {
+                holder.name.setText(cUser.getWorkerName());
+                holder.bookDate.setText(userBookDates.get(position).getDate());
+                SignupUserDTO finalUser = cUser;
+                holder.cancelBtn.setOnClickListener(v ->
+                {
+                    try {
+                        List<UserBookDate> ub = finalUser.getBookDate();
+
+                        for (int i = 0; i < ub.size(); i++) {
+                            if (ub.get(i).getDate().equals(cUB.getDate()) &&
+                                    ub.get(i).getUserDocId().equals(cUB.getUserDocId()) &&
+                                    ub.get(i).getDeskDocId().equals(cUB.getDeskDocId())) {
+                                ub.remove(ub.get(i));
+                                break;
+                            }
+                        }
+
+                        finalUser.setBookDate(ub);
+                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
+                                .document(finalUser.getUuID()).set(finalUser);
+
+                        List<UserBookDate> ub1 = deskUserDetailsScreenDTO.getBookDate();
+                        for (int i = 0; i < ub1.size(); i++) {
+                            if (ub1.get(i).getDate().equals(cUB.getDate()) &&
+                                    ub1.get(i).getUserDocId().equals(cUB.getUserDocId()) &&
+                                    ub1.get(i).getDeskDocId().equals(cUB.getDeskDocId())) {
+                                ub1.remove(ub1.get(i));
+                                break;
+                            }
+                        }
+
+                        deskUserDetailsScreenDTO.setBookDate(ub1);
+                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
+                                .document(cUB.getDeskDocId()).set(deskUserDetailsScreenDTO);
+
+                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
+                                .document(deskUserDetailsScreenDTO.getDocID()).get().addOnSuccessListener(documentSnapshot1 -> {
+                            if (documentSnapshot1.exists()) {
+                                List<UserBookDate> aa = documentSnapshot1.toObject(NewDesk.class).getBookDate();
+                                if (aa.size() > 0) {
+                                    userBookDates.clear();
+                                    userBookDates.addAll(aa);
+                                    adapter.notifyDataSetChanged();
+                                } else
+                                    finish();
+                            } else {
+                                finish();
+                            }
+                        });
+                    } catch (Exception ex) {
+                    }
+                });
+            }
+        }
+
+        public int getItemCount() {
+            return userBookDates.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            TextView name, bookDate;
+            Button cancelBtn;
+
+            public ViewHolder(@NonNull View view) {
+                super(view);
+                name = view.findViewById(R.id.name);
+                bookDate = view.findViewById(R.id.bookDate);
+                cancelBtn = view.findViewById(R.id.cancelBtn);
+            }
         }
     }
 }

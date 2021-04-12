@@ -117,6 +117,7 @@ public class FragmentDeskAvailable extends Fragment {
     }
 
     public void setRecyclerView() {
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -127,7 +128,6 @@ public class FragmentDeskAvailable extends Fragment {
             }
         }, 0);
     }
-
 
     @Override
     public void onResume() {
@@ -167,7 +167,7 @@ public class FragmentDeskAvailable extends Fragment {
                                         ((ScreenDeskUserHome) context).stopAnim();
                                         SignupUserDTO user = task2.getResult().toObject(SignupUserDTO.class);
                                         boolean userBookingFound = false;
-                                        if(user.bookDate!=null) {
+                                        if (user.bookDate != null) {
                                             for (UserBookDate t : user.bookDate) {
                                                 if (t.date.equals(searchDateString)) {
                                                     userBookingFound = true;
@@ -197,13 +197,13 @@ public class FragmentDeskAvailable extends Fragment {
                                                             boolean isFound = false;
                                                             for (UserBookDate t : deskLLL.get(i).bookDate) {
                                                                 if (t.date.equals(searchDateString)) {
-                                                                    isFound=true;
+                                                                    isFound = true;
                                                                     break;
                                                                 }
                                                             }
-                                                            if(!isFound)
+                                                            if (!isFound)
                                                                 filterList.add(deskLLL.get(i));
-                                                        }else
+                                                        } else
                                                             filterList.add(deskLLL.get(i));
                                                     }
 

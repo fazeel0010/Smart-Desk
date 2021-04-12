@@ -118,7 +118,7 @@ public class FragmentDeskBooked extends Fragment {
                     {
                         ((ScreenDeskUserHome) context).stopAnim();
                         if (!task.isEmpty()) {
-
+                            deskListNew.clear();
                             List<NewDesk> deskLLL = task.toObjects(NewDesk.class);
                             if (deskLLL.isEmpty()) {
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
@@ -140,15 +140,17 @@ public class FragmentDeskBooked extends Fragment {
                                 if (filterData.size() > 0) {
                                     view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
                                     deskListNew.clear();
-                                    deskListNew.addAll(filterData,datesList);
+                                    deskListNew.addAll(filterData, datesList);
                                     adapter.notifyDataSetChanged();
                                 } else {
                                     view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                                    deskListNew.clear();
                                     adapter.notifyDataSetChanged();
                                 }
                             }
                         } else {
                             view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                            deskListNew.clear();
                             adapter.notifyDataSetChanged();
                         }
                         onItemsLoadComplete();
@@ -201,13 +203,12 @@ public class FragmentDeskBooked extends Fragment {
             holder.regDate.setText(UtilityFunctions.getDateFormat(deskListNew.deskListNew.get(position).getRegistrationDate()));
             holder.name.setText(deskListNew.deskListNew.get(position).getName());
             holder.deskID.setText(UtilityFunctions.getDeskID(deskListNew.deskListNew.get(position).id));
-            holder.Date.setText("Booked Date: "+deskListNew.dateList.get(position));
+            holder.Date.setText("Booked Date: " + deskListNew.dateList.get(position));
 
             holder.mordetails.setOnClickListener(v -> {
                 try {
-                    ScreenSmartDeskDetailUser.deskUserDetailsScreenDTO = deskListNew.deskListNew.get(position);
-                    Intent intent = new Intent(innerContext, ScreenSmartDeskDetailUser.class);
-                    intent.putExtra("date", searchDateString);
+                    ScreenSmartDeskBookDetailUser.deskUserDetailsScreenDTO = deskListNew.deskListNew.get(position);
+                    Intent intent = new Intent(innerContext, ScreenSmartDeskBookDetailUser.class);
                     UtilityFunctions.sendIntentNormal((Activity) innerContext, intent, false, 0);
                 } catch (Exception ex) {
                 }

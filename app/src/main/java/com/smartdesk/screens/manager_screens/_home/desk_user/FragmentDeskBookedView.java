@@ -24,8 +24,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.smartdesk.R;
+import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.model.SmartDesk.NewDesk;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
 import com.smartdesk.utility.UtilityFunctions;
 
@@ -117,24 +119,37 @@ public class FragmentDeskBookedView extends Fragment {
                         if (!task.isEmpty()) {
                             List<NewDesk> deskLLL = task.toObjects(NewDesk.class);
                             if (deskLLL.isEmpty()) {
+                                bookedDesks.clear();
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                 adapter.notifyDataSetChanged();
                             } else {
                                 view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
-                                if (deskLLL.size() > 0) {
+
+                                List<NewDesk> filterData = new ArrayList<>();
+                                List<String> datesList = new ArrayList<>();
+                                for (int i = 0; i < deskLLL.size(); i++) {
+                                    for (UserBookDate t : deskLLL.get(i).bookDate) {
+                                        filterData.add(deskLLL.get(i));
+                                        datesList.add(t.getDate());
+                                        break;
+                                    }
+                                }
+
+                                if (filterData.size() > 0) {
                                     view.findViewById(R.id.listEmptyText).setVisibility(View.GONE);
                                     bookedDesks.clear();
-                                    bookedDesks.addAll(deskLLL);
+                                    bookedDesks.addAll(filterData);
                                     adapter.notifyDataSetChanged();
                                 } else {
+                                    bookedDesks.clear();
                                     view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                                     adapter.notifyDataSetChanged();
                                 }
                             }
                         } else {
+                            bookedDesks.clear();
                             view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                             adapter.notifyDataSetChanged();
-//                                redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                         }
                         adapter.notifyDataSetChanged();
                     }).addOnFailureListener(e -> {
@@ -185,8 +200,8 @@ public class FragmentDeskBookedView extends Fragment {
             holder.city.setText(getAddressLatLng(context, deskList.get(position).getDeskLat(), deskList.get(position).getDeskLng()));
             holder.mordetails.setOnClickListener(v -> {
                 try {
-                    ScreenSmartDeskDetailManager.deskUserDetailsScreenDTO = deskList.get(position);
-                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenSmartDeskDetailManager.class), false, 0);
+                    ScreenSmartDeskDetailBookManager.deskUserDetailsScreenDTO = deskList.get(position);
+                    UtilityFunctions.sendIntentNormal((Activity) innerContext, new Intent(innerContext, ScreenSmartDeskDetailBookManager.class), false, 0);
                 } catch (Exception ex) {
                 }
             });

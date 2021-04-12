@@ -128,10 +128,12 @@ public class FragmentDeskAvailableView extends Fragment {
                                     adapter.notifyDataSetChanged();
                                 } else {
                                     view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
+                                    avaiablesDesks.clear();
                                     adapter.notifyDataSetChanged();
                                 }
                             }
                         } else {
+                            avaiablesDesks.clear();
                             view.findViewById(R.id.listEmptyText).setVisibility(View.VISIBLE);
                             adapter.notifyDataSetChanged();
 //                                redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);

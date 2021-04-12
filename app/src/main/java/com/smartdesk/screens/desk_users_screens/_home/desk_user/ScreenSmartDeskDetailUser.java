@@ -8,14 +8,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +45,7 @@ import com.smartdesk.utility.memory.MemoryCache;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ScreenSmartDeskDetailUser extends AppCompatActivity {
 
@@ -107,21 +113,16 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
     }
 
     private void initIds() {
-//        if (deskUserDetailsScreenDTO.getUserStatus().equalsIgnoreCase(Constants.activeStatus)) {
-//            ((LinearLayout) findViewById(R.id.llStatuslist)).setWeightSum(8);
-//            findViewById(R.id.approved).setVisibility(View.GONE);
-//        } else if (deskUserDetailsScreenDTO.getUserStatus().equalsIgnoreCase(Constants.blockedStatus)) {
-//            ((LinearLayout) findViewById(R.id.llStatuslist)).setWeightSum(8);
-//            findViewById(R.id.blocked).setVisibility(View.GONE);
-//
-//            findViewById(R.id.bgStatus).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.SmartDesk_Orange));
-//            binding.statusImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_block));
-//            binding.statusText.setText("Account is blocked");
-//        } else {
-//            findViewById(R.id.bgStatus).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.SmartDesk_Orange));
-//            binding.statusImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_time_simple));
-//            binding.statusText.setText("Account is in Review");
-//        }
+        List<UserBookDate> book = deskUserDetailsScreenDTO.getBookDate();
+        if (book != null && book.size() > 0) {
+            findViewById(R.id.bgStatus).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.whatsapp_green_dark));
+            binding.statusImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_approve_24));
+            binding.statusText.setText("Desk book by users");
+        } else {
+            findViewById(R.id.bgStatus).setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.SmartDesk_Orange));
+            binding.statusImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_block));
+            binding.statusText.setText("Desk not yet book by anyone");
+        }
 
         binding.deskID.setText(deskUserDetailsScreenDTO.getId());
         binding.name.setText(deskUserDetailsScreenDTO.getName());
@@ -137,6 +138,8 @@ public class ScreenSmartDeskDetailUser extends AppCompatActivity {
         binding.builtinSpeakerText.setText(deskUserDetailsScreenDTO.builtinSpeaker);
         binding.groupUserText.setText(deskUserDetailsScreenDTO.groupUser);
         docId = UtilityFunctions.getDocumentID(context);
+
+        binding.recyclerViewCard.setVisibility(View.GONE);
     }
 
     public void actionBar(String actionTitle) {

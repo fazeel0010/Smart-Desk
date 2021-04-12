@@ -347,14 +347,14 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/recycler_viewCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
-                    android:clickable="true"
                     android:elevation="10dp"
-                    android:foreground="?attr/selectableItemBackground"
                     android:orientation="vertical"
                     app:cardBackgroundColor="@color/cardViewColor"
                     app:cardCornerRadius="8dp"
@@ -376,6 +376,13 @@
                             android:text="Desk Booking Details"
                             android:textColor="@color/white"
                             android:textSize="14sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingTop="20dp"
+                            android:visibility="visible" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 

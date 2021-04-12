@@ -18,10 +18,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenSplashBinding;
+import com.smartdesk.model.SmartDesk.NewDesk;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.screens.admin._home.ScreenAdminHome;
 import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
 import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
@@ -36,6 +40,11 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import static com.smartdesk.constants.FirebaseConstants.firebaseFirestore;
 
 public class ScreenSplash extends AppCompatActivity {
@@ -49,7 +58,6 @@ public class ScreenSplash extends AppCompatActivity {
         binding = ScreenSplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         context = this;
-
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(false)
                 .build();
@@ -67,6 +75,92 @@ public class ScreenSplash extends AppCompatActivity {
                 e.printStackTrace();
             }
         }, 1500);
+
+
+
+        firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("role", Constants.deskUserRole).get().addOnSuccessListener(
+                queryDocumentSnapshots ->
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                List<SignupUserDTO> allUsers = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+                                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty() && queryDocumentSnapshots.size() > 0) {
+
+                                            String datePattern = "EEEE, dd-MMM-yyyy";
+                                            Date date = new Date();
+                                            SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
+
+                                            List<NewDesk> desks = queryDocumentSnapshots.toObjects(NewDesk.class);
+                                            if (desks != null && desks.size() > 0) {
+                                                for (NewDesk desk : desks) {
+                                                    for (UserBookDate ub : desk.getBookDate()) {
+                                                        try {
+                                                            Date bookDate = formatter.parse(ub.getDate());
+                                                            if (bookDate.before(date)) {
+                                                                SignupUserDTO user = null;
+                                                                for (SignupUserDTO u : allUsers) {
+                                                                    for (UserBookDate b : u.getBookDate()) {
+                                                                        if (b.getDeskDocId().equals(ub.getDeskDocId()) && b.getDate().equals(ub.date)
+                                                                                && b.getUserDocId().equals(ub.getUserDocId())) {
+                                                                            user = u;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (user != null) {
+
+                                                                    SignupUserDTO finalUser = user;
+
+                                                                    try {
+                                                                        List<UserBookDate> ubLis = finalUser.getBookDate();
+
+                                                                        for (int i = 0; i < ubLis.size(); i++) {
+                                                                            if (ubLis.get(i).getDate().equals(ub.getDate()) &&
+                                                                                    ubLis.get(i).getUserDocId().equals(ub.getUserDocId()) &&
+                                                                                    ubLis.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
+                                                                                ubLis.remove(ubLis.get(i));
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                        finalUser.setBookDate(ubLis);
+                                                                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
+                                                                                .document(finalUser.getUuID()).set(finalUser);
+
+                                                                        List<UserBookDate> ub1 = desk.getBookDate();
+                                                                        for (int i = 0; i < ub1.size(); i++) {
+                                                                            if (ub1.get(i).getDate().equals(ub.getDate()) &&
+                                                                                    ub1.get(i).getUserDocId().equals(ub.getUserDocId()) &&
+                                                                                    ub1.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
+                                                                                ub1.remove(ub1.get(i));
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                        desk.setBookDate(ub1);
+                                                                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
+                                                                                .document(ub.getDeskDocId()).set(desk);
+
+                                                                    } catch (Exception ex) {
+                                                                    }
+                                                                }
+                                                            }
+                                                        } catch (ParseException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            } else
+                                System.out.println("FAILED");
+                        })).
+                addOnFailureListener(e -> {
+                    System.out.println("Failures listnere");
+
+                });
     }
 
     private void checkAccessToken() {
@@ -81,53 +175,53 @@ public class ScreenSplash extends AppCompatActivity {
                 startAnim();
                 firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", mobile).get()
                         .addOnSuccessListener(task -> {
-                    if (!task.isEmpty()) {
-                        SignupUserDTO signupUserDTO = task.toObjects(SignupUserDTO.class).get(0);
-                        new Thread(() -> {
-                            String decryptPassword = "";
-                            try {
-                                decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.getWorkerPassword());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            stopAnimOnUIThread();
-                            if (decryptPassword.equals(pass)) {
-                                Constants.USER_NAME = signupUserDTO.getWorkerName();
-                                Constants.USER_PROFILE = signupUserDTO.getProfilePicture();
-                                Constants.USER_MOBILE = signupUserDTO.getWorkerPhone();
-                                UtilityFunctions.scheduleJob(this, true);
-
-                                if (signupUserDTO.getUserStatus().equals(Constants.activeStatus)) {
-                                    UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
-                                    if (signupUserDTO.getRole().equals(Constants.adminRole)) {
-                                        System.out.println("admin");
-                                        Constants.USER_ROLE = Constants.adminRole;
-                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
-                                    } else if (signupUserDTO.getRole().equals(Constants.deskUserRole)) {
-                                        System.out.println("Mechanic");
-                                        Constants.USER_ROLE = Constants.deskUserRole;
-                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserHome.class), true, Constants.changeIntentDelay);
-                                    } else if (signupUserDTO.getRole().equals(Constants.managerRole)) {
-                                        System.out.println("Consumer");
-                                        Constants.USER_ROLE = Constants.managerRole;
-                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManagerHome.class), true, Constants.changeIntentDelay);
+                            if (!task.isEmpty()) {
+                                SignupUserDTO signupUserDTO = task.toObjects(SignupUserDTO.class).get(0);
+                                new Thread(() -> {
+                                    String decryptPassword = "";
+                                    try {
+                                        decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.getWorkerPassword());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-                                } else {
-                                    UtilityFunctions.setIsLoignSharedPreference(context, false);
-                                    alertToMoveToLogin("Account Status", signupUserDTO.getUserStatus(), Gravity.CENTER);
-                                }
+                                    stopAnimOnUIThread();
+                                    if (decryptPassword.equals(pass)) {
+                                        Constants.USER_NAME = signupUserDTO.getWorkerName();
+                                        Constants.USER_PROFILE = signupUserDTO.getProfilePicture();
+                                        Constants.USER_MOBILE = signupUserDTO.getWorkerPhone();
+                                        UtilityFunctions.scheduleJob(this, true);
+
+                                        if (signupUserDTO.getUserStatus().equals(Constants.activeStatus)) {
+                                            UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
+                                            if (signupUserDTO.getRole().equals(Constants.adminRole)) {
+                                                System.out.println("admin");
+                                                Constants.USER_ROLE = Constants.adminRole;
+                                                UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
+                                            } else if (signupUserDTO.getRole().equals(Constants.deskUserRole)) {
+                                                System.out.println("Mechanic");
+                                                Constants.USER_ROLE = Constants.deskUserRole;
+                                                UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserHome.class), true, Constants.changeIntentDelay);
+                                            } else if (signupUserDTO.getRole().equals(Constants.managerRole)) {
+                                                System.out.println("Consumer");
+                                                Constants.USER_ROLE = Constants.managerRole;
+                                                UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManagerHome.class), true, Constants.changeIntentDelay);
+                                            }
+                                        } else {
+                                            UtilityFunctions.setIsLoignSharedPreference(context, false);
+                                            alertToMoveToLogin("Account Status", signupUserDTO.getUserStatus(), Gravity.CENTER);
+                                        }
+                                    } else {
+                                        UtilityFunctions.setIsLoignSharedPreference(context, false);
+                                        alertToMoveToLogin("Account Credentials", "Your Password has been changed!", Gravity.CENTER);
+                                    }
+                                }).start();
                             } else {
+                                stopAnimOnUIThread();
                                 UtilityFunctions.setIsLoignSharedPreference(context, false);
-                                alertToMoveToLogin("Account Credentials", "Your Password has been changed!", Gravity.CENTER);
+                                UtilityFunctions.orangeSnackBar(context, "Phone Number is not Registered!", Snackbar.LENGTH_SHORT);
+                                UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenLogin.class), true, Constants.changeIntentDelay);
                             }
-                        }).start();
-                    } else {
-                        stopAnimOnUIThread();
-                        UtilityFunctions.setIsLoignSharedPreference(context, false);
-                        UtilityFunctions.orangeSnackBar(context, "Phone Number is not Registered!", Snackbar.LENGTH_SHORT);
-                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenLogin.class), true, Constants.changeIntentDelay);
-                    }
-                }).addOnFailureListener(e -> {
+                        }).addOnFailureListener(e -> {
                     UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenLogin.class), true, 0);
                 });
             }, 0);

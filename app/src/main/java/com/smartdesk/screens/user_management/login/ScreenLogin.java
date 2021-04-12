@@ -14,10 +14,14 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenLoginBinding;
+import com.smartdesk.model.SmartDesk.NewDesk;
+import com.smartdesk.model.SmartDesk.UserBookDate;
 import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
 import com.smartdesk.screens.manager_screens.sign_up.ScreenMangerSignup;
 import com.smartdesk.screens.user_management.forget_password.ScreenForgetPasswordStep1;
@@ -34,6 +38,10 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ScreenLogin extends AppCompatActivity {
@@ -80,7 +88,7 @@ public class ScreenLogin extends AppCompatActivity {
             bottomView.findViewById(R.id.MangerRegistration).setOnClickListener(v -> UtilityFunctions.sendIntentNormal(context, new Intent(ScreenLogin.this, ScreenMangerSignup.class), false, 0));
             bottomSheetDialog.setContentView(bottomView);
             bottomSheetDialog.show();
-        }catch (Exception ex){
+        } catch (Exception ex) {
 
         }
     }
@@ -133,7 +141,7 @@ public class ScreenLogin extends AppCompatActivity {
                 Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", finalMobile);
                 queryNumber.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     new Thread(() -> {
-                    List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+                        List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
                         if (signupUserDTO.isEmpty()) {
                             stopAnimOnUIThread();
                             UtilityFunctions.orangeSnackBar(context, "Phone Number is not Registered!", Snackbar.LENGTH_LONG);
