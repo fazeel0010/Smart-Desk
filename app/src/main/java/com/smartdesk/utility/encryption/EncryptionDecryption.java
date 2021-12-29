@@ -13,12 +13,12 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class EncryptPassword {
+public class EncryptionDecryption {
     private static String IV = "IV_VALUE_16_BYTE";
     private static String PASSWORD = "SmartDesk0010";
     private static String SALT = "SmartDesk";
 
-    public static String passwordEncryption(String raw) {
+    public static String encryptionNormalText(String raw) {
         try {
             Cipher c = getCipher(Cipher.ENCRYPT_MODE);
             byte[] encryptedVal = c.doFinal(getBytes(raw));
@@ -29,7 +29,7 @@ public class EncryptPassword {
         }
     }
 
-    public static String passwordDecryption(String encrypted) throws Exception {
+    public static String decryptionCypherText(String encrypted) throws Exception {
         byte[] decodedValue = Base64.decode(getBytes(encrypted),Base64.DEFAULT);
         Cipher c = getCipher(Cipher.DECRYPT_MODE);
         byte[] decValue = c.doFinal(decodedValue);
@@ -56,7 +56,7 @@ public class EncryptPassword {
         char[] password = PASSWORD.toCharArray();
         byte[] salt = getBytes(SALT);
 
-        KeySpec spec = new PBEKeySpec(password, salt, 65536, 128);
+        KeySpec spec = new PBEKeySpec(password, salt, 25, 128);
         SecretKey tmp = factory.generateSecret(spec);
         byte[] encoded = tmp.getEncoded();
         return new SecretKeySpec(encoded, "AES");

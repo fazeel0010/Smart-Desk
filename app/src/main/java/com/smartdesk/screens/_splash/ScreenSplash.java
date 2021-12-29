@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
@@ -31,7 +32,7 @@ import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
 import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
 import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.utility.encryption.EncryptPassword;
+import com.smartdesk.utility.encryption.EncryptionDecryption;
 import com.smartdesk.model.signup.SignupUserDTO;
 import com.smartdesk.utility.memory.MemoryCache;
 import com.google.android.material.snackbar.Snackbar;
@@ -173,14 +174,16 @@ public class ScreenSplash extends AppCompatActivity {
         if (documentId != null && isLogin) {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 startAnim();
-                firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", mobile).get()
+                String encryptedMobile = EncryptionDecryption.encryptionNormalText(mobile);
+                firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", encryptedMobile).get()
                         .addOnSuccessListener(task -> {
                             if (!task.isEmpty()) {
                                 SignupUserDTO signupUserDTO = task.toObjects(SignupUserDTO.class).get(0);
+                                signupUserDTO.setWorkerPhone(mobile);
                                 new Thread(() -> {
                                     String decryptPassword = "";
                                     try {
-                                        decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.getWorkerPassword());
+                                        decryptPassword = EncryptionDecryption.decryptionCypherText(signupUserDTO.getWorkerPassword());
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }

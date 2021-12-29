@@ -19,7 +19,7 @@ import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.utility.encryption.EncryptPassword;
+import com.smartdesk.utility.encryption.EncryptionDecryption;
 import com.smartdesk.utility.library.CustomEditext;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
 import com.smartdesk.utility.memory.MemoryCache;
@@ -68,7 +68,7 @@ public class ScreenForgetPasswordStep3 extends AppCompatActivity {
             if (pass.equals(cPass)) {
                 startAnim();
                 new Thread(() -> {
-                    String encryptedPassword = EncryptPassword.passwordEncryption(pass);
+                    String encryptedPassword = EncryptionDecryption.encryptionNormalText(pass);
                     FirebaseConstants.firebaseFirestore
                             .collection(FirebaseConstants.usersCollection)
                             .document(Constants.USER_DOCUMENT_ID)

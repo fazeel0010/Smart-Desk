@@ -27,6 +27,7 @@ public class Constants {
     public static Integer USER_ROLE;
     public static String USER_NAME;
     public static String USER_MOBILE;
+    public static String USER_Password;
     public static String USER_PROFILE;
     public static String USER_DOCUMENT_ID;
     public static Boolean USER_MECHANIC_ONLINE;

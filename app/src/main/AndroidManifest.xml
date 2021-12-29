@@ -47,6 +47,11 @@
             android:screenOrientation="portrait"></activity>
 
 
+        <activity
+            android:name=".screens.user_management.login.LoginOTP"
+            android:screenOrientation="portrait"></activity>
+
+
         <!-- ============================= Desk User Signup Screens ==================================== -->
         <activity
             android:name="com.smartdesk.screens.desk_users_screens.sign_up.ScreenDeskUserSignup"

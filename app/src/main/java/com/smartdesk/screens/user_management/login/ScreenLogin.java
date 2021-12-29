@@ -14,40 +14,34 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.smartdesk.R;
 import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenLoginBinding;
-import com.smartdesk.model.SmartDesk.NewDesk;
-import com.smartdesk.model.SmartDesk.UserBookDate;
-import com.smartdesk.screens.manager_screens._home.ScreenManagerHome;
+import com.smartdesk.model.signup.SignupUserDTO;
+import com.smartdesk.screens.admin._home.ScreenAdminHome;
+import com.smartdesk.screens.desk_users_screens.sign_up.ScreenDeskUserSignup;
 import com.smartdesk.screens.manager_screens.sign_up.ScreenMangerSignup;
 import com.smartdesk.screens.user_management.forget_password.ScreenForgetPasswordStep1;
 import com.smartdesk.utility.UtilityFunctions;
-import com.smartdesk.utility.encryption.EncryptPassword;
-import com.smartdesk.model.signup.SignupUserDTO;
-import com.smartdesk.screens.admin._home.ScreenAdminHome;
-import com.smartdesk.screens.desk_users_screens._home.ScreenDeskUserHome;
-import com.smartdesk.screens.desk_users_screens.sign_up.ScreenDeskUserSignup;
+import com.smartdesk.utility.encryption.EncryptionDecryption;
 import com.smartdesk.utility.memory.MemoryCache;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.Snackbar;
 
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class ScreenLogin extends AppCompatActivity {
 
     private Activity context;
     private ScreenLoginBinding binding;
+    //======================================== Show Loading bar ==============================================
+    private LinearLayout load, bg_main;
+    private ObjectAnimator anim;
+    private ImageView progressBar;
+    private Boolean isLoad;
 
     @Override
     protected void onDestroy() {
@@ -63,7 +57,6 @@ public class ScreenLogin extends AppCompatActivity {
         initLoadingBarItems();
         UtilityFunctions.setupUI(findViewById(R.id.bg_main), this);
     }
-
 
     private void init() {
         binding = ScreenLoginBinding.inflate(getLayoutInflater());
@@ -92,7 +85,6 @@ public class ScreenLogin extends AppCompatActivity {
 
         }
     }
-
 
     public void login(View view) {
         UtilityFunctions.removeFocusFromEditexts(findViewById(R.id.bg_main), context);
@@ -138,7 +130,29 @@ public class ScreenLogin extends AppCompatActivity {
             final String finalPass = pass;
             new Handler(Looper.getMainLooper()).postDelayed(() -> new Handler(Looper.getMainLooper()).postDelayed((Runnable) () -> {
                 startAnim();
-                Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", finalMobile);
+                String encryptedMobile = EncryptionDecryption.encryptionNormalText(finalMobile);
+                String passAAAA = EncryptionDecryption.encryptionNormalText("asd123");
+                System.out.println(encryptedMobile + "HELLO");
+
+                //                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
+//                        .get().addOnSuccessListener(queryDocumentSnapshots -> {
+//                    List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
+//
+//                    for (DocumentSnapshot aas: queryDocumentSnapshots.getDocuments()) {
+//                        SignupUserDTO aa = aas.toObject(SignupUserDTO.class);
+//                        aa.setWorkerPassword(passAAAA);
+//                        System.out.println( aas.getId());
+//                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(aas.getId()).set(aa);
+//                    }
+//                });
+
+//                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(FirebaseConstants.adminDocumentID).get().addOnSuccessListener(documentSnapshot -> {
+//                    SignupUserDTO aa = documentSnapshot.toObject(SignupUserDTO.class);
+//                    aa.setWorkerPhone(encryptedMobile);
+//                    FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(FirebaseConstants.adminDocumentID).set(aa);
+//                });
+
+                Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", encryptedMobile);
                 queryNumber.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     new Thread(() -> {
                         List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
@@ -148,7 +162,8 @@ public class ScreenLogin extends AppCompatActivity {
                         } else {
                             String decryptPassword = "";
                             try {
-                                decryptPassword = EncryptPassword.passwordDecryption(signupUserDTO.get(0).getWorkerPassword());
+                                signupUserDTO.get(0).setWorkerPhone(finalMobile);
+                                decryptPassword = EncryptionDecryption.decryptionCypherText(signupUserDTO.get(0).getWorkerPassword());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -165,19 +180,18 @@ public class ScreenLogin extends AppCompatActivity {
                                     Constants.USER_NAME = signupUserDTO.get(0).getWorkerName();
                                     Constants.USER_PROFILE = signupUserDTO.get(0).getProfilePicture();
                                     Constants.USER_MOBILE = signupUserDTO.get(0).getWorkerPhone();
-                                    UtilityFunctions.saveLoginCredentialsInSharedPreference(context, finalMobile, finalPass, documentID, true);
-                                    UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
+                                    Constants.USER_Password = finalPass;
 
                                     if (signupUserDTO.get(0).getRole() == Constants.adminRole) {
-                                        System.out.println("admin");
                                         Constants.USER_ROLE = Constants.adminRole;
+                                        UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.USER_MOBILE, Constants.USER_Password, Constants.USER_DOCUMENT_ID, true);
                                         UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
                                     } else if (signupUserDTO.get(0).getRole() == Constants.deskUserRole) {
                                         Constants.USER_ROLE = Constants.deskUserRole;
-                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenDeskUserHome.class), true, Constants.changeIntentDelay);
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, LoginOTP.class), false, Constants.changeIntentDelay);
                                     } else if (signupUserDTO.get(0).getRole() == Constants.managerRole) {
                                         Constants.USER_ROLE = Constants.managerRole;
-                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenManagerHome.class), true, Constants.changeIntentDelay);
+                                        UtilityFunctions.sendIntentNormal(context, new Intent(context, LoginOTP.class), false, Constants.changeIntentDelay);
                                     }
                                 } else {
                                     UtilityFunctions.alertNoteWithOkButton(context, "Account Status", signupUserDTO.get(0).getUserStatus(), Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
@@ -199,12 +213,6 @@ public class ScreenLogin extends AppCompatActivity {
             UtilityFunctions.orangeSnackBar(this, "Please Enter Credentials Properly!", Snackbar.LENGTH_SHORT);
 
     }
-
-    //======================================== Show Loading bar ==============================================
-    private LinearLayout load, bg_main;
-    private ObjectAnimator anim;
-    private ImageView progressBar;
-    private Boolean isLoad;
 
     private void initLoadingBarItems() {
         load = findViewById(R.id.loading_view);

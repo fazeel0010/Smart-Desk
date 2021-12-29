@@ -34,6 +34,7 @@ import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.constants.PermisionCode;
 import com.smartdesk.screens.user_management.signup_otp.ScreenSignUpOTP;
 import com.smartdesk.utility.UtilityFunctions;
+import com.smartdesk.utility.encryption.EncryptionDecryption;
 import com.smartdesk.utility.library.PageStepIndicator;
 import com.smartdesk.utility.location.FusedLocation;
 import com.smartdesk.model.signup.SignupUserDTO;
@@ -285,7 +286,8 @@ public class ScreenDeskUserSignup extends AppCompatActivity {
             else {
                 ((ScreenDeskUserSignup) context).startAnim();
                 try {
-                    Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", Constants.const_usersSignupDTO.getWorkerPhone());
+                    String encryptedMobile = EncryptionDecryption.encryptionNormalText(Constants.const_usersSignupDTO.getWorkerPhone());
+                    Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", encryptedMobile);
                     queryNumber.get().addOnCompleteListener(task -> {
                         try {
                             if (task.isSuccessful()) {
