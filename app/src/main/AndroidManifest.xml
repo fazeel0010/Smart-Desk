@@ -48,6 +48,11 @@
 
 
         <activity
+            android:name="com.smartdesk.screens.admin.audit.ScreenAudting"
+            android:screenOrientation="portrait"></activity>
+
+
+        <activity
             android:name=".screens.user_management.login.LoginOTP"
             android:screenOrientation="portrait"></activity>
 

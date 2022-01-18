@@ -20,6 +20,7 @@ import com.smartdesk.constants.Constants;
 import com.smartdesk.constants.FirebaseConstants;
 import com.smartdesk.databinding.ScreenAdminHomeBinding;
 import com.smartdesk.screens.admin._home.desk_user.PagerAdapterDeskUser;
+import com.smartdesk.screens.admin.audit.ScreenAudting;
 import com.smartdesk.screens.admin.manager_status.ScreenBlockedManager;
 import com.smartdesk.screens.admin.manager_status.ScreenAdminManager;
 import com.smartdesk.screens.user_management.login.ScreenLogin;
@@ -33,6 +34,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import static com.smartdesk.constants.FirebaseConstants.loginAuditCollection;
+import static com.smartdesk.firebase.FirestoreAuditing.firestoreGenericModel;
 import static com.smartdesk.utility.UtilityFunctions.picassoGetCircleImage;
 
 public class ScreenAdminHome extends AppCompatActivity {
@@ -165,6 +168,7 @@ public class ScreenAdminHome extends AppCompatActivity {
     public void logout(View view) {
         closeDrawer();
         UtilityFunctions.removeLoginInfoInSharedPreference(this);
+        firestoreGenericModel(loginAuditCollection, "Logout Successfully","Logout", Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
         UtilityFunctions.logoutSnackBar(this, "Logout Successfully!", Snackbar.LENGTH_SHORT);
         UtilityFunctions.sendIntentClearPreviousActivity(context, new Intent(context, ScreenLogin.class), Constants.changeIntentDelay);
     }
@@ -179,6 +183,10 @@ public class ScreenAdminHome extends AppCompatActivity {
 
     public void ManagerRequests(View view) {
         UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminManager.class), false, 0);
+    }
+
+    public void Auditing(View view) {
+        UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAudting.class), false, 0);
     }
     //======================================== Show Loading bar ==============================================
 }

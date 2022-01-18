@@ -365,6 +365,34 @@
                                 android:layout_marginTop="15dp"
                                 android:background="@drawable/ripple_linear_white"
                                 android:clickable="true"
+                                android:onClick="Auditing">
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:paddingStart="16dp"
+                                    android:src="@drawable/ic_baseline_library_add_check_24"
+                                    app:tint="@color/white" />
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/segoeui"
+                                    android:paddingStart="8dp"
+                                    android:paddingTop="8dp"
+                                    android:paddingBottom="8dp"
+                                    android:text="Auditing &amp; Logs"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:background="@drawable/ripple_linear_white"
+                                android:clickable="true"
                                 android:onClick="information">
                                 <ImageView
                                     android:layout_width="wrap_content"

@@ -25,7 +25,9 @@ public class Constants {
 
     //User Details Constants
     public static Integer USER_ROLE;
+    public static String USER_ROLE_STR;
     public static String USER_NAME;
+    public static String USER_MOBILE_Real;
     public static String USER_MOBILE;
     public static String USER_Password;
     public static String USER_PROFILE;

@@ -31,6 +31,9 @@ import com.smartdesk.utility.UtilityFunctions;
 import com.smartdesk.utility.location.FusedLocation;
 import com.smartdesk.utility.memory.MemoryCache;
 
+import static com.smartdesk.constants.FirebaseConstants.loginAuditCollection;
+import static com.smartdesk.firebase.FirestoreAuditing.firestoreGenericModel;
+
 public class ScreenManagerHome extends AppCompatActivity {
 
     ScreenManagerHomeBinding binding;
@@ -170,6 +173,7 @@ public class ScreenManagerHome extends AppCompatActivity {
     public void logout(View view) {
         closeDrawer();
         UtilityFunctions.removeLoginInfoInSharedPreference(this);
+        firestoreGenericModel(loginAuditCollection, "Logout Successfully","Logout", Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
         UtilityFunctions.logoutSnackBar(this, "Logout Successfully!", Snackbar.LENGTH_SHORT);
         UtilityFunctions.sendIntentClearPreviousActivity(context, new Intent(context, ScreenLogin.class), Constants.changeIntentDelay);
     }

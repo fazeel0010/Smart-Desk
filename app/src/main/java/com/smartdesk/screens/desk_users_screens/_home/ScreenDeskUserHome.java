@@ -38,6 +38,8 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import static com.smartdesk.constants.FirebaseConstants.loginAuditCollection;
+import static com.smartdesk.firebase.FirestoreAuditing.firestoreGenericModel;
 import static java.util.ResourceBundle.clearCache;
 
 public class ScreenDeskUserHome extends AppCompatActivity {
@@ -202,6 +204,7 @@ public class ScreenDeskUserHome extends AppCompatActivity {
     public void logout(View view) {
         closeDrawer();
         UtilityFunctions.removeLoginInfoInSharedPreference(this);
+        firestoreGenericModel(loginAuditCollection, "Logout Successfully","Logout", Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
         UtilityFunctions.logoutSnackBar(this, "Logout Successfully!", Snackbar.LENGTH_SHORT);
         UtilityFunctions.sendIntentClearPreviousActivity(context, new Intent(context, ScreenLogin.class), Constants.changeIntentDelay);
     }

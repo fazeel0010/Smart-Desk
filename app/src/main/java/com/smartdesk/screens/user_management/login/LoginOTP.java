@@ -42,6 +42,9 @@ import com.smartdesk.utility.memory.MemoryCache;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static com.smartdesk.constants.FirebaseConstants.loginAuditCollection;
+import static com.smartdesk.firebase.FirestoreAuditing.firestoreGenericModel;
+
 public class LoginOTP extends AppCompatActivity {
 
     Boolean isAnyDialogOpen = false;
@@ -92,10 +95,12 @@ public class LoginOTP extends AppCompatActivity {
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
                 // Invalid request
                 // ...
+                firestoreGenericModel(loginAuditCollection, "Login OTP invalid otp request!","Login", Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                 UtilityFunctions.redSnackBar(context, "Invalid request!", Snackbar.LENGTH_SHORT);
             } else if (e instanceof FirebaseTooManyRequestsException) {
                 // The SMS quota for the project has been exceeded
                 // ...
+                firestoreGenericModel(loginAuditCollection, "Login OTP sending limit cross!", "Login",Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                 UtilityFunctions.redSnackBar(context, "!", Snackbar.LENGTH_SHORT);
                 UtilityFunctions.alertNoteWithOkButton(context, "Otp Verification", "OTP sending limit cross", Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
             }
@@ -111,6 +116,7 @@ public class LoginOTP extends AppCompatActivity {
                 ex.printStackTrace();
             }
             if (isResend) {
+                firestoreGenericModel(loginAuditCollection, "Login OTP resend again Successfully!","Login", Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                 UtilityFunctions.greenSnackBar(context, "Code Resend Successfully!", Snackbar.LENGTH_LONG);
                 isResend = false;
             }
@@ -288,6 +294,7 @@ public class LoginOTP extends AppCompatActivity {
                         context,
                         mCallbacks, resendToken);
             } else {
+                firestoreGenericModel(loginAuditCollection, "Login OTP unable to send again!", "Login",Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                 UtilityFunctions.orangeSnackBar(context, "Unable to send OTP to your number!", Snackbar.LENGTH_SHORT);
             }
         }, 0);
@@ -336,7 +343,7 @@ public class LoginOTP extends AppCompatActivity {
                         // Sign in success, update UI with the signed-in user's information
 
                         UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
-
+                        firestoreGenericModel(loginAuditCollection, "Login Successfully", "Login",Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                         if (Constants.USER_ROLE == Constants.deskUserRole) {
                             Constants.USER_ROLE = Constants.deskUserRole;
                             UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.USER_MOBILE, Constants.USER_Password, Constants.USER_DOCUMENT_ID, true);
@@ -353,11 +360,13 @@ public class LoginOTP extends AppCompatActivity {
                         if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                             // The verification code entered was invalid
                             code.setError("Wrong Code");
+                            firestoreGenericModel(loginAuditCollection, "Login Unsuccessfully due to Wrong OTP!", "Login",Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                             if (!isAnyDialogOpen) {
                                 UtilityFunctions.alertNoteWithOkButton(context, "Otp Verification", "Wrong OTP! used wrong SMS verification code to verify the phone number", Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
                                 isAnyDialogOpen = true;
                             }
                         } else {
+                            firestoreGenericModel(loginAuditCollection, "Login Unsuccessfully because something went wrong!","Login", Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                             if (!isAnyDialogOpen) {
                                 UtilityFunctions.alertNoteWithOkButton(context, "Otp Verification", "Something Went Wrong", Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
                                 isAnyDialogOpen = true;
@@ -367,6 +376,7 @@ public class LoginOTP extends AppCompatActivity {
                 }).addOnFailureListener(this, e -> {
             stopAnim();
             if (!isAnyDialogOpen) {
+                firestoreGenericModel(loginAuditCollection, "Login Unsuccessfully due to "+e.getMessage(), "Login",Constants.USER_MOBILE_Real,Constants.USER_ROLE_STR);
                 UtilityFunctions.alertNoteWithOkButton(context, "Otp Verification", e.getMessage(), Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
                 isAnyDialogOpen = true;
             }

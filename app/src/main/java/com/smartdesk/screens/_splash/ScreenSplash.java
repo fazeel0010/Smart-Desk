@@ -71,7 +71,8 @@ public class ScreenSplash extends AppCompatActivity {
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             try {
-                checkAccessToken();
+                UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenLogin.class), true, 0);
+//                checkAccessToken();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -84,71 +85,68 @@ public class ScreenSplash extends AppCompatActivity {
                         new Handler(Looper.getMainLooper()).post(() -> {
                             if (!queryDocumentSnapshots.isEmpty()) {
                                 List<SignupUserDTO> allUsers = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
-                                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty() && queryDocumentSnapshots.size() > 0) {
+                                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection).get().addOnSuccessListener(queryDocumentSnapshots1 -> {
+                                    if (queryDocumentSnapshots1 != null && !queryDocumentSnapshots1.isEmpty() && queryDocumentSnapshots1.size() > 0) {
 
-                                            String datePattern = "EEEE, dd-MMM-yyyy";
-                                            Date date = new Date();
-                                            SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
+                                        String datePattern = "EEEE, dd-MMM-yyyy";
+                                        Date date = new Date();
+                                        SimpleDateFormat formatter = new SimpleDateFormat(datePattern);
 
-                                            List<NewDesk> desks = queryDocumentSnapshots.toObjects(NewDesk.class);
-                                            if (desks != null && desks.size() > 0) {
-                                                for (NewDesk desk : desks) {
-                                                    for (UserBookDate ub : desk.getBookDate()) {
-                                                        try {
-                                                            Date bookDate = formatter.parse(ub.getDate());
-                                                            if (bookDate.before(date)) {
-                                                                SignupUserDTO user = null;
-                                                                for (SignupUserDTO u : allUsers) {
-                                                                    for (UserBookDate b : u.getBookDate()) {
-                                                                        if (b.getDeskDocId().equals(ub.getDeskDocId()) && b.getDate().equals(ub.date)
-                                                                                && b.getUserDocId().equals(ub.getUserDocId())) {
-                                                                            user = u;
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-                                                                if (user != null) {
-
-                                                                    SignupUserDTO finalUser = user;
-
-                                                                    try {
-                                                                        List<UserBookDate> ubLis = finalUser.getBookDate();
-
-                                                                        for (int i = 0; i < ubLis.size(); i++) {
-                                                                            if (ubLis.get(i).getDate().equals(ub.getDate()) &&
-                                                                                    ubLis.get(i).getUserDocId().equals(ub.getUserDocId()) &&
-                                                                                    ubLis.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
-                                                                                ubLis.remove(ubLis.get(i));
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                        finalUser.setBookDate(ubLis);
-                                                                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
-                                                                                .document(finalUser.getUuID()).set(finalUser);
-
-                                                                        List<UserBookDate> ub1 = desk.getBookDate();
-                                                                        for (int i = 0; i < ub1.size(); i++) {
-                                                                            if (ub1.get(i).getDate().equals(ub.getDate()) &&
-                                                                                    ub1.get(i).getUserDocId().equals(ub.getUserDocId()) &&
-                                                                                    ub1.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
-                                                                                ub1.remove(ub1.get(i));
-                                                                                break;
-                                                                            }
-                                                                        }
-                                                                        desk.setBookDate(ub1);
-                                                                        FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
-                                                                                .document(ub.getDeskDocId()).set(desk);
-
-                                                                    } catch (Exception ex) {
+                                        List<NewDesk> desks = queryDocumentSnapshots1.toObjects(NewDesk.class);
+                                        if (desks != null && desks.size() > 0) {
+                                            for (NewDesk desk : desks) {
+                                                for (UserBookDate ub : desk.getBookDate()) {
+                                                    try {
+                                                        Date bookDate = formatter.parse(ub.getDate());
+                                                        if (bookDate.before(date)) {
+                                                            SignupUserDTO user = null;
+                                                            for (SignupUserDTO u : allUsers) {
+                                                                for (UserBookDate b : u.getBookDate()) {
+                                                                    if (b.getDeskDocId().equals(ub.getDeskDocId()) && b.getDate().equals(ub.date)
+                                                                            && b.getUserDocId().equals(ub.getUserDocId())) {
+                                                                        user = u;
+                                                                        break;
                                                                     }
                                                                 }
                                                             }
-                                                        } catch (ParseException e) {
-                                                            e.printStackTrace();
+                                                            if (user != null) {
+
+                                                                SignupUserDTO finalUser = user;
+
+                                                                try {
+                                                                    List<UserBookDate> ubLis = finalUser.getBookDate();
+
+                                                                    for (int i = 0; i < ubLis.size(); i++) {
+                                                                        if (ubLis.get(i).getDate().equals(ub.getDate()) &&
+                                                                                ubLis.get(i).getUserDocId().equals(ub.getUserDocId()) &&
+                                                                                ubLis.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
+                                                                            ubLis.remove(ubLis.get(i));
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    finalUser.setBookDate(ubLis);
+                                                                    FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
+                                                                            .document(finalUser.getUuID()).set(finalUser);
+
+                                                                    List<UserBookDate> ub1 = desk.getBookDate();
+                                                                    for (int i = 0; i < ub1.size(); i++) {
+                                                                        if (ub1.get(i).getDate().equals(ub.getDate()) &&
+                                                                                ub1.get(i).getUserDocId().equals(ub.getUserDocId()) &&
+                                                                                ub1.get(i).getDeskDocId().equals(ub.getDeskDocId())) {
+                                                                            ub1.remove(ub1.get(i));
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    desk.setBookDate(ub1);
+                                                                    FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.smartDeskCollection)
+                                                                            .document(ub.getDeskDocId()).set(desk);
+
+                                                                } catch (Exception ex) {
+                                                                }
+                                                            }
                                                         }
+                                                    } catch (ParseException e) {
+                                                        e.printStackTrace();
                                                     }
                                                 }
                                             }
@@ -160,7 +158,6 @@ public class ScreenSplash extends AppCompatActivity {
                         })).
                 addOnFailureListener(e -> {
                     System.out.println("Failures listnere");
-
                 });
     }
 

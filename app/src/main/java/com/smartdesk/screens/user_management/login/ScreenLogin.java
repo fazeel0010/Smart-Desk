@@ -33,6 +33,9 @@ import com.smartdesk.utility.memory.MemoryCache;
 
 import java.util.List;
 
+import static com.smartdesk.constants.FirebaseConstants.loginAuditCollection;
+import static com.smartdesk.firebase.FirestoreAuditing.firestoreGenericModel;
+
 public class ScreenLogin extends AppCompatActivity {
 
     private Activity context;
@@ -126,31 +129,12 @@ public class ScreenLogin extends AppCompatActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            Constants.USER_MOBILE_Real = mobile;
             final String finalMobile = mobile;
             final String finalPass = pass;
             new Handler(Looper.getMainLooper()).postDelayed(() -> new Handler(Looper.getMainLooper()).postDelayed((Runnable) () -> {
                 startAnim();
                 String encryptedMobile = EncryptionDecryption.encryptionNormalText(finalMobile);
-                String passAAAA = EncryptionDecryption.encryptionNormalText("asd123");
-                System.out.println(encryptedMobile + "HELLO");
-
-                //                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection)
-//                        .get().addOnSuccessListener(queryDocumentSnapshots -> {
-//                    List<SignupUserDTO> signupUserDTO = queryDocumentSnapshots.toObjects(SignupUserDTO.class);
-//
-//                    for (DocumentSnapshot aas: queryDocumentSnapshots.getDocuments()) {
-//                        SignupUserDTO aa = aas.toObject(SignupUserDTO.class);
-//                        aa.setWorkerPassword(passAAAA);
-//                        System.out.println( aas.getId());
-//                            FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(aas.getId()).set(aa);
-//                    }
-//                });
-
-//                FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(FirebaseConstants.adminDocumentID).get().addOnSuccessListener(documentSnapshot -> {
-//                    SignupUserDTO aa = documentSnapshot.toObject(SignupUserDTO.class);
-//                    aa.setWorkerPhone(encryptedMobile);
-//                    FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).document(FirebaseConstants.adminDocumentID).set(aa);
-//                });
 
                 Query queryNumber = FirebaseConstants.firebaseFirestore.collection(FirebaseConstants.usersCollection).whereEqualTo("workerPhone", encryptedMobile);
                 queryNumber.get().addOnSuccessListener(queryDocumentSnapshots -> {
@@ -168,6 +152,13 @@ public class ScreenLogin extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                             stopAnimOnUIThread();
+                            if (signupUserDTO.get(0).getRole() == Constants.adminRole)
+                                Constants.USER_ROLE_STR = "Admin";
+                            else if (signupUserDTO.get(0).getRole() == Constants.deskUserRole)
+                                Constants.USER_ROLE_STR = "Desk-User";
+                            else if (signupUserDTO.get(0).getRole() == Constants.managerRole)
+                                Constants.USER_ROLE_STR = "Manager";
+
                             if (decryptPassword.equals(finalPass)) {
                                 UtilityFunctions.scheduleJob(this, true);
                                 if (signupUserDTO.get(0).getUserStatus().equals(Constants.activeStatus)) {
@@ -182,9 +173,12 @@ public class ScreenLogin extends AppCompatActivity {
                                     Constants.USER_MOBILE = signupUserDTO.get(0).getWorkerPhone();
                                     Constants.USER_Password = finalPass;
 
+
                                     if (signupUserDTO.get(0).getRole() == Constants.adminRole) {
                                         Constants.USER_ROLE = Constants.adminRole;
                                         UtilityFunctions.saveLoginCredentialsInSharedPreference(context, Constants.USER_MOBILE, Constants.USER_Password, Constants.USER_DOCUMENT_ID, true);
+                                        UtilityFunctions.greenSnackBar(context, "Login Successfully!", Snackbar.LENGTH_SHORT);
+                                        firestoreGenericModel(loginAuditCollection, "Login Successfully", "Login",Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
                                         UtilityFunctions.sendIntentNormal(context, new Intent(context, ScreenAdminHome.class), true, Constants.changeIntentDelay);
                                     } else if (signupUserDTO.get(0).getRole() == Constants.deskUserRole) {
                                         Constants.USER_ROLE = Constants.deskUserRole;
@@ -193,23 +187,26 @@ public class ScreenLogin extends AppCompatActivity {
                                         Constants.USER_ROLE = Constants.managerRole;
                                         UtilityFunctions.sendIntentNormal(context, new Intent(context, LoginOTP.class), false, Constants.changeIntentDelay);
                                     }
+
                                 } else {
+                                    firestoreGenericModel(loginAuditCollection, "Login UnSuccessfully due to\n\n" + signupUserDTO.get(0).getUserStatus(),"Login", Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
                                     UtilityFunctions.alertNoteWithOkButton(context, "Account Status", signupUserDTO.get(0).getUserStatus(), Gravity.CENTER, R.color.SmartDesk_Orange, R.color.black_color, false, false, null);
                                 }
 
                             } else {
+                                firestoreGenericModel(loginAuditCollection, "Login UnSuccessfully due to incorrect password", "Login", Constants.USER_MOBILE_Real, Constants.USER_ROLE_STR);
                                 UtilityFunctions.orangeSnackBar((Activity) context, "Incorrect Password!", Snackbar.LENGTH_SHORT);
                             }
                         }
                     }).start();
                 }).addOnFailureListener(e -> {
                     stopAnim();
+                    firestoreGenericModel(loginAuditCollection, "Login UnSuccessfully due to no Internet", "Login", Constants.USER_MOBILE_Real, "Unknown");
                     UtilityFunctions.redSnackBar(context, "No Internet!", Snackbar.LENGTH_SHORT);
                 });
             }, 0), 0);
 
         } else
-
             UtilityFunctions.orangeSnackBar(this, "Please Enter Credentials Properly!", Snackbar.LENGTH_SHORT);
 
     }
